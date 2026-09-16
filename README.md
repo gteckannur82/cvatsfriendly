@@ -9,7 +9,7 @@ Production source for **[cvatsfriendly.com](https://cvatsfriendly.com)**: a lean
 - **Accounts & billing.** Email/password auth with HttpOnly sessions, plus a Free/Pro plan with Stripe Checkout, the Customer Portal and webhooks.
 - **Marketing site.** Landing page, pricing, templates gallery, ATS guide, privacy and terms pages, sitemap, robots.txt and JSON-LD structured data.
 
-**Stack:** TanStack Start (React 19, SSR, server functions) · Cloudflare Workers · D1 (SQLite) · Workers AI or Claude · Stripe · Tailwind CSS v4 · `@react-pdf/renderer`.
+**Stack:** TanStack Start (React 19, SSR, server functions) · Cloudflare Workers · D1 (SQLite) · Workers AI, Groq or Claude · Stripe · Tailwind CSS v4 · `@react-pdf/renderer`.
 Everything runs on the **Cloudflare Workers free tier**.
 
 ---
@@ -30,6 +30,7 @@ With `AI_MOCK=true` in `.dev.vars`, the AI features return canned text, so you c
 To use **real** AI locally, choose one:
 
 - **Claude:** set `ANTHROPIC_API_KEY` in `.dev.vars` and set `AI_MOCK=false`.
+- **Groq:** set `GROQ_API_KEY` in `.dev.vars` and set `AI_MOCK=false` (used when `ANTHROPIC_API_KEY` is not set).
 - **Workers AI (free):** run `npx wrangler login` once, set `AI_MOCK=false`, and start dev with remote bindings enabled:
   ```bash
   CF_REMOTE_BINDINGS=true npm run dev
@@ -66,8 +67,10 @@ To use **real** AI locally, choose one:
 | `STRIPE_SECRET_KEY` | For billing | `sk_test_…` (test mode) or `sk_live_…` |
 | `STRIPE_WEBHOOK_SECRET` | For billing | `whsec_…` signing secret of your webhook endpoint |
 | `STRIPE_PRICE_ID` | No | Existing recurring price. If empty, a $9/mo price is created inline at checkout |
-| `ANTHROPIC_API_KEY` | No | When set, AI uses Claude; otherwise it uses Workers AI |
+| `ANTHROPIC_API_KEY` | No | When set, AI uses Claude; otherwise Groq (if set), otherwise Workers AI |
 | `ANTHROPIC_MODEL` | No | Overrides the Claude model (default `claude-opus-5`). For example, `claude-haiku-4-5` is much cheaper per call |
+| `GROQ_API_KEY` | No | When set (and `ANTHROPIC_API_KEY` is not), AI uses Groq |
+| `GROQ_MODEL` | No | Overrides the Groq model (default `openai/gpt-oss-120b`) |
 | `AI_MOCK` | No | `true` returns canned AI output (local development only) |
 
 **Bindings** (`wrangler.jsonc`): `DB` is D1, and `AI` is Workers AI.

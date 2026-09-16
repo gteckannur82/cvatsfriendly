@@ -8,10 +8,15 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 STRIPE_PRICE_ID=
 
 # --- AI ---
-# Optional: when set, Claude is used for AI features; otherwise Workers AI (free tier) is used.
+# Optional: when set, Claude is used for AI features; otherwise Groq, then Workers AI (free tier).
 ANTHROPIC_API_KEY=
 # Optional model override (default claude-opus-5)
 ANTHROPIC_MODEL=
+
+# Optional: used when ANTHROPIC_API_KEY is not set.
+GROQ_API_KEY=
+# Optional model override (default openai/gpt-oss-120b)
+GROQ_MODEL=
 
 # Optional: return canned AI responses for offline UI development
 AI_MOCK=false

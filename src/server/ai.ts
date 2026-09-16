@@ -4,6 +4,7 @@ import { env } from './env'
 /**
  * AI provider abstraction.
  *  - ANTHROPIC_API_KEY set → Claude (structured JSON output, server-side refusal fallbacks)
+ *  - GROQ_API_KEY set      → Groq (OpenAI-compatible chat completions)
  *  - otherwise             → Cloudflare Workers AI binding (free tier)
  */
 
@@ -18,13 +19,18 @@ export interface JsonTask {
 }
 
 export function aiProviderName() {
-  return env.AI_MOCK === 'true' ? 'mock' : env.ANTHROPIC_API_KEY ? 'claude' : 'workers-ai'
+  if (env.AI_MOCK === 'true') return 'mock'
+  if (env.ANTHROPIC_API_KEY) return 'claude'
+  if (env.GROQ_API_KEY) return 'groq'
+  return 'workers-ai'
 }
 
 export async function generateJson<T>(task: JsonTask): Promise<T> {
   const provider = aiProviderName()
   if (provider === 'mock') return mockJson<T>(task)
-  return provider === 'claude' ? claudeJson<T>(task) : workersAiJson<T>(task)
+  if (provider === 'claude') return claudeJson<T>(task)
+  if (provider === 'groq') return groqJson<T>(task)
+  return workersAiJson<T>(task)
 }
 
 /** Deterministic offline responses for local UI development (AI_MOCK=true). */
@@ -60,6 +66,31 @@ async function claudeJson<T>({ system, prompt, schema, effort = 'low', maxTokens
   })
   if (response.stop_reason === 'refusal') throw new Error('The AI declined this request. Try rephrasing the content.')
   const text = response.content.flatMap((b) => (b.type === 'text' ? [b.text] : [])).join('')
+  return parseJson<T>(text)
+}
+
+async function groqJson<T>({ system, prompt, schema, maxTokens = 4000 }: JsonTask): Promise<T> {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: env.GROQ_MODEL || 'openai/gpt-oss-120b',
+      max_tokens: maxTokens,
+      temperature: 0.4,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: `${system}\n\nRespond with JSON only, matching this JSON schema:\n${JSON.stringify(schema)}` },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  })
+  if (!response.ok) throw new Error(`Groq request failed (${response.status}): ${await response.text()}`)
+  const data = (await response.json()) as { choices?: { message?: { content?: string } }[] }
+  const text = data.choices?.[0]?.message?.content
+  if (!text) throw new Error('The AI returned an unexpected response. Please try again.')
   return parseJson<T>(text)
 }
 

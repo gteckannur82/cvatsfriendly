@@ -6,6 +6,8 @@ export interface Secrets {
   STRIPE_PRICE_ID?: string
   ANTHROPIC_API_KEY?: string
   ANTHROPIC_MODEL?: string
+  GROQ_API_KEY?: string
+  GROQ_MODEL?: string
   AI_MOCK?: string
 }
 
