@@ -33,7 +33,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       meta: [
         { charSet: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'theme-color', content: '#059669' },
+        { name: 'theme-color', content: '#e6e8eb' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: SITE.name },
         { name: 'twitter:card', content: 'summary_large_image' },
@@ -47,7 +47,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;700;800&family=Chivo+Mono:wght@400;500&display=swap',
         },
       ],
       scripts: [{ type: 'application/ld+json', children: JSON.stringify(jsonLd) }],

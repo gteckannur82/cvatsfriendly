@@ -151,7 +151,7 @@ function Dashboard() {
             <h2 className="flex items-center gap-2 font-display font-bold text-ink">
               <Sparkles className="h-4 w-4 text-brand-600" /> Applying to lots of jobs?
             </h2>
-            <p className="mt-1 text-sm text-slate-600">Pro unlocks all templates, 150 AI credits a day, and up to 50 tailored resumes.</p>
+            <p className="mt-1 text-sm text-slate-600">Pro unlocks all templates, {limitsFor('pro').aiPerDay} AI credits a day, and up to {limitsFor('pro').maxResumes} tailored resumes.</p>
           </div>
           <Link to="/app/billing" className="btn-primary">
             See Pro

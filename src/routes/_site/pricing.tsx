@@ -14,25 +14,23 @@ export const Route = createFileRoute('/_site/pricing')({
 
 function Pricing() {
   return (
-    <section className="py-16 sm:py-20">
+    <section className="bg-desk py-16 sm:py-20">
       <div className="container-page">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
-          <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">Pricing that fits a job search</h1>
-          <p className="mt-4 text-lg text-slate-600">Start free. Upgrade for a month while you’re applying, and cancel when you land the role.</p>
+        <div className="mx-auto mb-12 max-w-4xl">
+          <h1 className="font-display text-[clamp(2.6rem,5vw,4rem)] leading-[0.98] font-extrabold tracking-[-0.035em] text-balance text-ink">
+            Pricing that fits a job search
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">Start free. Upgrade for a month while you’re applying, and cancel when you land the role.</p>
         </div>
-        <PricingCards />
-        <div className="mx-auto mt-16 grid max-w-4xl gap-8 text-sm text-slate-600 md:grid-cols-3">
-          <div>
-            <h2 className="font-semibold text-ink">What counts as an AI credit?</h2>
-            <p className="mt-2">Rewriting a bullet, improving a role or writing a summary uses 1 credit. Tailoring a whole resume to a job uses 3.</p>
+        <PricingCards headingLevel={2} />
+        <div className="mx-auto mt-16 grid max-w-4xl gap-x-12 border-t border-ink md:grid-cols-2">
+          <div className="border-b border-slate-300 py-5">
+            <h2 className="font-bold text-ink">What happens if I cancel?</h2>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-ink-soft">You keep Pro until the end of the period. Your resumes and versions stay safe on the Free plan.</p>
           </div>
-          <div>
-            <h2 className="font-semibold text-ink">What happens if I cancel?</h2>
-            <p className="mt-2">You keep Pro until the end of the period. Your resumes and versions stay safe on the Free plan.</p>
-          </div>
-          <div>
-            <h2 className="font-semibold text-ink">Is payment secure?</h2>
-            <p className="mt-2">Payments are processed by Stripe. We never see or store your card details.</p>
+          <div className="border-b border-slate-300 py-5">
+            <h2 className="font-bold text-ink">Is payment secure?</h2>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-ink-soft">Payments are processed by Stripe. We never see or store your card details.</p>
           </div>
         </div>
       </div>

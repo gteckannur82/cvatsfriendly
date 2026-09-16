@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { db } from '~/server/env'
 import { requireUser, type UserRow } from '~/server/auth'
 import { bulletVariantsTask, generateJson, roleBulletsTask, summaryTask, tailorTask, type TailorResult } from '~/server/ai'
-import { limitsFor } from '~/lib/plans'
+import { AI_CREDIT_COST, limitsFor } from '~/lib/plans'
 import { resumeDataSchema } from '~/lib/resume/schema'
 import { resumePlainText } from '~/lib/resume/ats'
 import { UPGRADE_PREFIX } from '~/lib/errors'
@@ -69,7 +69,7 @@ const jd = z.string().max(15000).optional()
 export const aiRewriteBullet = createServerFn({ method: 'POST' })
   .validator(z.object({ bullet: z.string().min(3).max(600), position: z.string().max(200), company: z.string().max(200), jobDescription: jd }))
   .handler(({ data }) =>
-    withCredit(1, async () => {
+    withCredit(AI_CREDIT_COST.rewriteBullet, async () => {
       const out = await generateJson<{ options: string[] }>(bulletVariantsTask(data))
       return { options: clean(out.options, 3) }
     }),
@@ -80,7 +80,7 @@ export const aiImproveRole = createServerFn({ method: 'POST' })
     z.object({ bullets: z.array(z.string().max(600)).min(1).max(15), position: z.string().max(200), company: z.string().max(200), jobDescription: jd }),
   )
   .handler(({ data }) =>
-    withCredit(1, async () => {
+    withCredit(AI_CREDIT_COST.improveRole, async () => {
       const out = await generateJson<{ bullets: string[] }>(roleBulletsTask(data))
       return { bullets: clean(out.bullets, 16) }
     }),
@@ -89,7 +89,7 @@ export const aiImproveRole = createServerFn({ method: 'POST' })
 export const aiWriteSummary = createServerFn({ method: 'POST' })
   .validator(z.object({ resume: resumeDataSchema, jobDescription: jd }))
   .handler(({ data }) =>
-    withCredit(1, async () => {
+    withCredit(AI_CREDIT_COST.writeSummary, async () => {
       const out = await generateJson<{ options: string[] }>(summaryTask({ resumeText: resumePlainText(data.resume), jobDescription: data.jobDescription }))
       return { options: clean(out.options, 2) }
     }),
@@ -98,7 +98,7 @@ export const aiWriteSummary = createServerFn({ method: 'POST' })
 export const aiTailorResume = createServerFn({ method: 'POST' })
   .validator(z.object({ resume: resumeDataSchema, jobDescription: z.string().min(50, 'Paste the full job description (at least a few sentences).').max(15000) }))
   .handler(({ data }) =>
-    withCredit(3, async () => {
+    withCredit(AI_CREDIT_COST.tailorResume, async () => {
       const r = data.resume
       const compact = {
         headline: r.basics.headline,

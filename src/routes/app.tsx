@@ -37,7 +37,7 @@ function AppLayout() {
           </div>
           <div className="flex items-center gap-2">
             {user.plan === 'pro' ? (
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">PRO</span>
+              <span className="rounded-[3px] border border-ink px-2 py-0.5 text-xs font-bold text-ink">Pro</span>
             ) : (
               <Link to="/app/billing" className="btn-primary btn-sm">
                 <Sparkles className="h-3.5 w-3.5" /> Upgrade

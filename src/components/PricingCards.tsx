@@ -1,51 +1,99 @@
 import { Link } from '@tanstack/react-router'
-import { Check } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { PLAN_FEATURES, PRO_PRICE_DISPLAY } from '~/lib/plans'
+import { AI_CREDIT_NOTE, PLAN_FEATURES, PRO_PRICE_DISPLAY } from '~/lib/plans'
 
-export function PricingCards({ proAction }: { proAction?: ReactNode }) {
+/** Both plans as one rate sheet: two ruled columns, prices in tabular figures, features derived from PLAN_LIMITS. */
+export function PricingCards({ proAction, headingLevel = 3 }: { proAction?: ReactNode; headingLevel?: 2 | 3 }) {
   return (
-    <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-      <div className="card flex flex-col p-7">
-        <h3 className="font-display text-lg font-bold text-ink">Free</h3>
-        <p className="mt-1 text-sm text-slate-600">Everything you need for one strong resume.</p>
-        <p className="mt-5 font-display text-4xl font-extrabold text-ink">
-          $0<span className="text-base font-medium text-slate-500"> / forever</span>
-        </p>
-        <ul className="mt-6 flex-1 space-y-3 text-sm">
-          {PLAN_FEATURES.free.map((f) => (
-            <li key={f} className="flex gap-2">
-              <Check className="h-5 w-5 shrink-0 text-brand-600" /> {f}
-            </li>
-          ))}
-        </ul>
-        <Link to="/signup" className="btn-outline mt-8 w-full py-2.5">
-          Start free
-        </Link>
-      </div>
-      <div className="relative flex flex-col rounded-2xl border-2 border-brand-600 bg-white p-7 shadow-lg shadow-brand-600/10">
-        <span className="absolute -top-3 right-6 rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white">Most popular</span>
-        <h3 className="font-display text-lg font-bold text-ink">Pro</h3>
-        <p className="mt-1 text-sm text-slate-600">For an active job search with many applications.</p>
-        <p className="mt-5 font-display text-4xl font-extrabold text-ink">
-          {PRO_PRICE_DISPLAY}
-          <span className="text-base font-medium text-slate-500"> / month</span>
-        </p>
-        <ul className="mt-6 flex-1 space-y-3 text-sm">
-          {PLAN_FEATURES.pro.map((f) => (
-            <li key={f} className="flex gap-2">
-              <Check className="h-5 w-5 shrink-0 text-brand-600" /> {f}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8">
-          {proAction ?? (
-            <Link to="/signup" search={{ plan: 'pro' }} className="btn-primary w-full py-2.5">
-              Get Pro
+    <div className="mx-auto max-w-4xl">
+      <div className="sheet grid md:grid-cols-2">
+        <Plan
+          name="Free"
+          headingLevel={headingLevel}
+          blurb="Everything you need for one strong resume."
+          price="$0"
+          period="forever"
+          features={PLAN_FEATURES.free}
+          action={
+            <Link to="/signup" className="btn-outline w-full py-3">
+              Build my resume
             </Link>
-          )}
-        </div>
+          }
+        />
+        <Plan
+          name="Pro"
+          headingLevel={headingLevel}
+          blurb="For an active search with many applications."
+          price={PRO_PRICE_DISPLAY}
+          period="per month"
+          features={PLAN_FEATURES.pro}
+          markDifferences
+          action={
+            proAction ?? (
+              <Link to="/signup" search={{ plan: 'pro' }} className="btn-primary w-full py-3">
+                Get Pro
+              </Link>
+            )
+          }
+          divided
+        />
       </div>
+      <p className="mt-5 text-sm leading-relaxed text-ink-soft">{AI_CREDIT_NOTE}</p>
     </div>
+  )
+}
+
+function Plan({
+  name,
+  blurb,
+  price,
+  period,
+  features,
+  action,
+  divided,
+  markDifferences,
+  headingLevel,
+}: {
+  name: string
+  blurb: string
+  price: string
+  period: string
+  features: string[]
+  action: ReactNode
+  divided?: boolean
+  /** Set the first figure in each feature in heavy ink, e.g. the "150" in "150 AI credits a day". Highlighter colours stay reserved for keyword marks. */
+  markDifferences?: boolean
+  headingLevel: 2 | 3
+}) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3'
+  return (
+    <div className={`flex flex-col p-6 sm:p-8 ${divided ? 'border-t border-slate-200 md:border-t-0 md:border-l' : ''}`}>
+      <Heading className="font-display text-2xl font-extrabold tracking-[-0.02em] text-ink">{name}</Heading>
+      <p className="mt-1 text-[15px] text-ink-soft">{blurb}</p>
+      <p className="mt-6 flex items-baseline gap-2 border-b border-ink pb-5">
+        <span className="num text-5xl font-medium text-ink">{price}</span>
+        <span className="text-[15px] text-ink-soft">{period}</span>
+      </p>
+      <ul className="flex-1 text-[15px] text-ink">
+        {features.map((f) => (
+          <li key={f} className="border-b border-slate-200 py-2.5">
+            {markDifferences ? markFirstFigure(f) : f}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-6">{action}</div>
+    </div>
+  )
+}
+
+function markFirstFigure(text: string): ReactNode {
+  const m = text.match(/\b(All \d+|\d+)\b/)
+  if (!m || m.index === undefined) return text
+  return (
+    <>
+      {text.slice(0, m.index)}
+      <strong className="font-extrabold">{m[0]}</strong>
+      {text.slice(m.index + m[0].length)}
+    </>
   )
 }
