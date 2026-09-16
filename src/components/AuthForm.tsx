@@ -30,14 +30,14 @@ export function AuthForm({ mode, redirectTo }: { mode: 'login' | 'signup'; redir
 
   const isSignup = mode === 'signup'
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-b from-brand-50/60 to-white px-4 py-12">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-desk px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <LogoMark className="mx-auto h-11 w-11" />
-          <h1 className="mt-4 font-display text-2xl font-extrabold text-ink">{isSignup ? 'Create your free account' : 'Welcome back'}</h1>
-          <p className="mt-1 text-sm text-slate-600">{isSignup ? 'Build an ATS-friendly resume in minutes.' : 'Log in to continue editing your resumes.'}</p>
+          <h1 className="mt-4 font-display text-3xl font-extrabold tracking-[-0.03em] text-ink">{isSignup ? 'Create your free account' : 'Welcome back'}</h1>
+          <p className="mt-1.5 text-[15px] text-ink-soft">{isSignup ? 'Free plan. No credit card.' : 'Log in to continue editing your resumes.'}</p>
         </div>
-        <form onSubmit={onSubmit} className="card space-y-4 p-6">
+        <form onSubmit={onSubmit} className="sheet space-y-4 p-6 sm:p-7">
           {isSignup ? (
             <div>
               <label className="label" htmlFor="name">
@@ -88,7 +88,7 @@ export function AuthForm({ mode, redirectTo }: { mode: 'login' | 'signup'; redir
         </form>
         <p className="mt-6 text-center text-sm text-slate-600">
           {isSignup ? 'Already have an account? ' : 'New here? '}
-          <Link to={isSignup ? '/login' : '/signup'} search={{ redirect: redirectTo }} className="font-semibold text-brand-700 hover:underline">
+          <Link to={isSignup ? '/login' : '/signup'} search={{ redirect: redirectTo }} className="font-bold text-ink underline decoration-ink/30 hover:decoration-ink">
             {isSignup ? 'Log in' : 'Create a free account'}
           </Link>
         </p>

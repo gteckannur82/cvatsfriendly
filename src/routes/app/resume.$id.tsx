@@ -246,7 +246,7 @@ function EditorPage() {
               <button
                 key={s.id}
                 onClick={() => setStep(s.id)}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition ${step === s.id ? 'bg-ink text-white' : 'text-slate-600 hover:bg-slate-100'}`}
+                className={`min-h-9 shrink-0 rounded-[3px] px-3 py-1.5 text-xs font-semibold transition-colors ${step === s.id ? 'bg-ink text-white' : 'text-slate-600 hover:bg-slate-100'}`}
               >
                 <span className="mr-1 opacity-60">{i + 1}</span>
                 {s.label}

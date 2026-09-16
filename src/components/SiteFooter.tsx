@@ -1,55 +1,44 @@
 import { Link } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 import { Logo } from './Logo'
 import { SITE } from '~/lib/site'
 
+const link = 'inline-block py-3 text-ink-soft underline decoration-transparent underline-offset-4 transition-colors hover:text-ink hover:decoration-ink md:py-0.5'
+
 export function SiteFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-50">
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t border-ink bg-desk">
+      <div className="container-page grid gap-10 py-12 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
         <div className="space-y-3">
           <Logo />
-          <p className="text-sm text-slate-600">Clean, ATS-friendly resumes, with AI that helps you describe what you actually achieved.</p>
+          <p className="max-w-xs text-sm leading-relaxed text-ink-soft">Single-column, ATS-friendly resumes, with AI that describes what you actually achieved.</p>
         </div>
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900">Product</h3>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            <li>
-              <Link to="/templates" className="hover:text-slate-900">Resume templates</Link>
-            </li>
-            <li>
-              <Link to="/pricing" className="hover:text-slate-900">Pricing</Link>
-            </li>
-            <li>
-              <Link to="/signup" className="hover:text-slate-900">Create a resume</Link>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900">Resources</h3>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            <li>
-              <Link to="/ats-resume-guide" className="hover:text-slate-900">What is an ATS-friendly resume?</Link>
-            </li>
-            <li>
-              <a href={`mailto:${SITE.supportEmail}`} className="hover:text-slate-900">Contact support</a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold text-slate-900">Legal</h3>
-          <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            <li>
-              <Link to="/privacy" className="hover:text-slate-900">Privacy policy</Link>
-            </li>
-            <li>
-              <Link to="/terms" className="hover:text-slate-900">Terms of service</Link>
-            </li>
-          </ul>
-        </div>
+        <FooterColumn title="Product">
+          <Link to="/templates" className={link}>Resume templates</Link>
+          <Link to="/pricing" className={link}>Pricing</Link>
+          <Link to="/signup" className={link}>Build my resume</Link>
+        </FooterColumn>
+        <FooterColumn title="Resources">
+          <Link to="/ats-resume-guide" className={link}>What is an ATS-friendly resume?</Link>
+          <a href={`mailto:${SITE.supportEmail}`} className={link}>Contact support</a>
+        </FooterColumn>
+        <FooterColumn title="Legal">
+          <Link to="/privacy" className={link}>Privacy policy</Link>
+          <Link to="/terms" className={link}>Terms of service</Link>
+        </FooterColumn>
       </div>
-      <div className="border-t border-slate-200 py-5 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} {SITE.domain}. All rights reserved.
+      <div className="container-page border-t border-desk-rule py-5 text-[13px] text-ink-soft">
+        © {new Date().getFullYear()} {SITE.name}
       </div>
     </footer>
+  )
+}
+
+function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div>
+      <h3 className="text-sm font-bold text-ink">{title}</h3>
+      <div className="mt-2 flex flex-col items-start gap-0 text-sm md:mt-3 md:gap-2">{children}</div>
+    </div>
   )
 }

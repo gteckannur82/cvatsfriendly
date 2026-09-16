@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-16T13:47:08.096430+00:00",
+  "title": "Design System: CV ATS Friendly",
+  "extensions": {
+    "colorMeta": {
+      "desk": {
+        "role": "neutral",
+        "displayName": "PDF Desk Grey",
+        "canonical": "#e6e8eb",
+        "tonalRamp": [
+          "oklch(15% 0.008 250)",
+          "oklch(27% 0.008 250)",
+          "oklch(39% 0.008 250)",
+          "oklch(51% 0.008 250)",
+          "oklch(63% 0.008 250)",
+          "oklch(75% 0.008 250)",
+          "oklch(86% 0.008 250)",
+          "oklch(95% 0.008 250)"
+        ]
+      },
+      "desk-rule": {
+        "role": "neutral",
+        "displayName": "Desk Rule",
+        "canonical": "#cfd3d8",
+        "tonalRamp": [
+          "oklch(15% 0.01 250)",
+          "oklch(27% 0.01 250)",
+          "oklch(39% 0.01 250)",
+          "oklch(51% 0.01 250)",
+          "oklch(63% 0.01 250)",
+          "oklch(75% 0.01 250)",
+          "oklch(86% 0.01 250)",
+          "oklch(95% 0.01 250)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(86% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Laser Ink",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(86% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#3d4046",
+        "tonalRamp": [
+          "oklch(15% 0.01 260)",
+          "oklch(27% 0.01 260)",
+          "oklch(39% 0.01 260)",
+          "oklch(51% 0.01 260)",
+          "oklch(63% 0.01 260)",
+          "oklch(75% 0.01 260)",
+          "oklch(86% 0.01 260)",
+          "oklch(95% 0.01 260)"
+        ]
+      },
+      "mark": {
+        "role": "secondary",
+        "displayName": "Found Yellow",
+        "canonical": "#f6e53e",
+        "tonalRamp": [
+          "oklch(15% 0.17 105)",
+          "oklch(27% 0.17 105)",
+          "oklch(39% 0.17 105)",
+          "oklch(51% 0.17 105)",
+          "oklch(63% 0.17 105)",
+          "oklch(75% 0.17 105)",
+          "oklch(86% 0.17 105)",
+          "oklch(95% 0.17 105)"
+        ]
+      },
+      "mark-tint": {
+        "role": "tertiary",
+        "displayName": "Pale Yellow Tint",
+        "canonical": "#fef9c8",
+        "tonalRamp": [
+          "oklch(15% 0.08 105)",
+          "oklch(27% 0.08 105)",
+          "oklch(39% 0.08 105)",
+          "oklch(51% 0.08 105)",
+          "oklch(63% 0.08 105)",
+          "oklch(75% 0.08 105)",
+          "oklch(86% 0.08 105)",
+          "oklch(95% 0.08 105)"
+        ]
+      },
+      "miss": {
+        "role": "secondary",
+        "displayName": "Missing Pink",
+        "canonical": "#f7a8c8",
+        "tonalRamp": [
+          "oklch(15% 0.1 350)",
+          "oklch(27% 0.1 350)",
+          "oklch(39% 0.1 350)",
+          "oklch(51% 0.1 350)",
+          "oklch(63% 0.1 350)",
+          "oklch(75% 0.1 350)",
+          "oklch(86% 0.1 350)",
+          "oklch(95% 0.1 350)"
+        ]
+      },
+      "miss-ink": {
+        "role": "secondary",
+        "displayName": "Missing Ink",
+        "canonical": "#9b1c52",
+        "tonalRamp": [
+          "oklch(15% 0.15 355)",
+          "oklch(27% 0.15 355)",
+          "oklch(39% 0.15 355)",
+          "oklch(51% 0.15 355)",
+          "oklch(63% 0.15 355)",
+          "oklch(75% 0.15 355)",
+          "oklch(86% 0.15 355)",
+          "oklch(95% 0.15 355)"
+        ]
+      },
+      "brand-50": {
+        "role": "tertiary",
+        "displayName": "Brand 50 (yellow tint)",
+        "canonical": "#fef9c8",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      },
+      "brand-100": {
+        "role": "tertiary",
+        "displayName": "Brand 100 (yellow tint)",
+        "canonical": "#fbf1a0",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      },
+      "brand-200": {
+        "role": "tertiary",
+        "displayName": "Brand 200 (tint border)",
+        "canonical": "#d9c84a",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      },
+      "brand-500": {
+        "role": "neutral",
+        "displayName": "Brand 500 (ink)",
+        "canonical": "#2b2d31",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      },
+      "brand-600": {
+        "role": "neutral",
+        "displayName": "Brand 600 (ink)",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      },
+      "brand-700": {
+        "role": "neutral",
+        "displayName": "Brand 700 (ink)",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      },
+      "brand-800": {
+        "role": "neutral",
+        "displayName": "Brand 800 (ink)",
+        "canonical": "#0a0a0a",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#141414",
+          "#141414",
+          "#2b2d31",
+          "#d9c84a",
+          "#fbf1a0",
+          "#fef9c8",
+          "#fef9c8"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero H1 and closing call."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section H2s, auth and 404 titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sheet headers, FAQ questions, definition terms."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Section intros and running text in soft ink."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Captions, figcaptions, key labels; sentence case."
+      },
+      "numeric": {
+        "displayName": "Numeric",
+        "purpose": "Counts, scores, prices, credit costs, extracted text only."
+      },
+      "document": {
+        "displayName": "Document",
+        "purpose": "Sample postings and rewrite examples."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 1px 2px rgb(20 20 20 / 0.08), 0 14px 36px -12px rgb(20 20 20 / 0.28)",
+        "purpose": "Every sheet of paper on the desk."
+      },
+      {
+        "name": "card-hairline",
+        "value": "0 1px 2px rgb(20 20 20 / 0.06)",
+        "purpose": "Bordered cards in the app shell."
+      },
+      {
+        "name": "resume-paper",
+        "value": "0 1px 2px rgb(20 20 20 / 0.08), 0 12px 32px -10px rgb(20 20 20 / 0.24)",
+        "purpose": "Rendered resume previews."
+      },
+      {
+        "name": "focus-ring-input",
+        "value": "0 0 0 2px #f6e53e",
+        "purpose": "Input focus ring with ink border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-mark",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Swipe draw and digit roll."
+      },
+      {
+        "name": "swipe-draw",
+        "value": "520ms, stagger 38ms per mark, start 250ms",
+        "purpose": "Swipes draw once in reading order."
+      },
+      {
+        "name": "digit-roll",
+        "value": "1100ms, stagger 60ms per place, start 350ms",
+        "purpose": "Tally digits settle on computed value once."
+      },
+      {
+        "name": "dim",
+        "value": "opacity 0.18, 180ms ease-out",
+        "purpose": "Non-isolated marks when a key toggle is pressed."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "no animation",
+        "purpose": "Marks already drawn, digits static."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink rectangle for the main action; hero size shown.",
+      "html": "<button class=\"ds-btn-primary\">Build my resume <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": "font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;.ds-btn-primary{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;display:inline-flex;align-items:center;gap:8px;background:#141414;color:#fff;border:0;border-radius:3px;padding:14px 24px;font-size:16px;font-weight:700;cursor:pointer;transition:background-color 150ms}.ds-btn-primary:hover{background:#000}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:2px solid #141414;outline-offset:2px}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action; pale yellow tint on hover.",
+      "html": "<button class=\"ds-btn-outline\">Build my resume</button>",
+      "css": ".ds-btn-outline{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#141414;border:1px solid rgb(20 20 20/.8);border-radius:3px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;transition:background-color 150ms}.ds-btn-outline:hover{background:#fef9c8}.ds-btn-outline:focus-visible{outline:2px solid #141414;outline-offset:2px}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "White field with paper corners; ink border and yellow ring on focus.",
+      "html": "<label class=\"ds-label\">Email<input class=\"ds-input\" placeholder=\"you@example.com\"></label>",
+      "css": ".ds-label{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;display:block;font-size:12px;font-weight:500;color:#475569}.ds-input{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;display:block;margin-top:4px;width:260px;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:3px;padding:8px 12px;font-size:14px}.ds-input::placeholder{color:#64748b}.ds-input:focus{outline:none;border-color:#141414;box-shadow:0 0 0 2px #f6e53e}"
+    },
+    {
+      "name": "Site Header",
+      "kind": "nav",
+      "refersTo": "site-header",
+      "description": "Desk-grey bar with wordmark, text links and one primary button.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-nav-logo\">CV <span class=\"ds-nav-swipe\">ATS</span> Friendly</span><nav class=\"ds-nav-links\"><a href=\"#\">Templates</a><a href=\"#\">ATS guide</a><a href=\"#\">Pricing</a></nav><a class=\"ds-nav-cta\" href=\"#\">Build my resume</a></header>",
+      "css": ".ds-nav{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;background:#e6e8eb;border-bottom:1px solid #cfd3d8}.ds-nav-logo{font-size:17px;font-weight:800;letter-spacing:-.02em;color:#141414}.ds-nav-swipe{background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2.5 4.2C22 2.6 61 1.8 98.2 3.4L100 9.6 97.4 16.4C63 18.3 27 19.2.8 17.6L2.9 11.1z' fill='%23f6e53e'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:0 64%;background-size:100% 78%;padding-inline:.14em;margin-inline:-.14em}.ds-nav-links{display:flex;gap:4px;flex:1}.ds-nav-links a{color:#334155;font-size:14px;font-weight:700;text-decoration:none;padding:8px 12px;border-radius:3px}.ds-nav-links a:hover{background:rgb(15 23 42/.06);color:#141414}.ds-nav-cta{background:#141414;color:#fff;font-size:14px;font-weight:700;padding:8px 16px;border-radius:3px;text-decoration:none}.ds-nav-cta:hover{background:#000}"
+    },
+    {
+      "name": "Sheet",
+      "kind": "card",
+      "refersTo": "sheet",
+      "description": "A sheet of paper on the desk; the system's only container.",
+      "html": "<div class=\"ds-desk\"><div class=\"ds-sheet\"><div class=\"ds-sheet-head\"><h3>Two-column design</h3><p>Illustration of a common parsing failure</p></div><p class=\"ds-sheet-body\">One column, top to bottom.</p></div></div>",
+      "css": ".ds-desk{background:#e6e8eb;padding:32px}.ds-sheet{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;background:#fff;color:#141414;padding:24px 36px;box-shadow:0 1px 2px rgb(20 20 20/.08),0 14px 36px -12px rgb(20 20 20/.28)}.ds-sheet-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;border-bottom:1px solid #141414;padding-bottom:12px}.ds-sheet-head h3{margin:0;font-size:20px;font-weight:700}.ds-sheet-head p{margin:0;font-size:13px;color:#3d4046}.ds-sheet-body{font-size:15px;color:#3d4046}"
+    },
+    {
+      "name": "Highlighter Swipes",
+      "kind": "custom",
+      "refersTo": "mark",
+      "description": "The two meanings: found (yellow) and missing (pink with dotted underline).",
+      "html": "<p class=\"ds-doc\">Own <mark class=\"ds-swipe\">billing</mark> and <mark class=\"ds-swipe ds-swipe-miss\">onboarding</mark> for our <mark class=\"ds-swipe\">B2B SaaS</mark> platform.</p>",
+      "css": ".ds-doc{font-family:Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#000}.ds-swipe{background-color:transparent;color:inherit;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M2.5 4.2C22 2.6 61 1.8 98.2 3.4L100 9.6 97.4 16.4C63 18.3 27 19.2.8 17.6L2.9 11.1z' fill='%23f6e53e'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:0 64%;background-size:100% 78%;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding-inline:.14em;margin-inline:-.14em;animation:ds-draw 520ms cubic-bezier(.16,1,.3,1) backwards}.ds-swipe-miss{background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1.8 3.6C30 2.2 66 2.9 99 4.6L99.6 10.4 98.1 17.1C60 18.6 24 18.1 1.2 16.9L.2 9.8z' fill='%23f7a8c8'/%3E%3C/svg%3E\");text-decoration:underline dotted #9b1c52;text-decoration-thickness:1.5px;text-underline-offset:.24em;animation-delay:80ms}@keyframes ds-draw{from{background-size:0% 78%}}@media (prefers-reduced-motion:reduce){.ds-swipe{animation:none}}"
+    },
+    {
+      "name": "Key Toggle",
+      "kind": "chip",
+      "refersTo": "key-toggle-active",
+      "description": "Tally key row that isolates one kind of mark; pressed state is ink.",
+      "html": "<div class=\"ds-keys\"><button class=\"ds-key\" aria-pressed=\"true\"><span class=\"ds-sw ds-sw-y\"></span><span class=\"ds-kl\">In the resume</span><span class=\"ds-num\">23</span></button><button class=\"ds-key\" aria-pressed=\"false\"><span class=\"ds-sw ds-sw-p\"></span><span class=\"ds-kl\">Missing, add if true</span><span class=\"ds-num\">3</span></button></div>",
+      "css": ".ds-keys{display:flex;flex-direction:column;gap:6px;width:220px}.ds-key{font-family:'Chivo',ui-sans-serif,system-ui,sans-serif;display:flex;align-items:center;gap:8px;min-height:36px;padding:0 8px;border:1px solid transparent;border-radius:3px;background:transparent;color:#141414;font-size:13px;text-align:left;cursor:pointer;transition:border-color 150ms,background-color 150ms}.ds-key:hover{border-color:#cbd5e1}.ds-key[aria-pressed=true]{background:#141414;border-color:#141414;color:#fff}.ds-key:focus-visible{outline:2px solid #141414;outline-offset:2px}.ds-sw{width:20px;height:12px;border-radius:2px}.ds-sw-y{background:#f6e53e}.ds-sw-p{background:#f7a8c8}.ds-kl{flex:1}.ds-num{font-family:'Chivo Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Highlighted Printout",
+    "overview": "**Creative North Star: \"The Highlighted Printout\"**\n\nThe system is a job posting printed out and marked up against your resume, the ritual a job seeker already performs, done with exact keyed marks. Every surface is a cool PDF-viewer grey desk; content sits on white, letter-proportioned sheets with a hairline-plus-drop shadow; type is laser-black ink. The only colour in the world is highlighter, and highlighter always means something.\n\nDensity is document-like: ruled rows, hairline dividers, tabular figures for every count and price, and real document faces inside anything that represents a document. Sheets may sit a fraction of a degree off square on large screens, as paper on a desk does. Motion is the act of marking: swipes draw across matched words in reading order once, and digits roll to a computed value once. Under reduced motion the marks are already drawn and the digits are static.\n\nThe world rejects the generic SaaS shell it replaced: no gradients, blobs, pills, icon tiles, glassmorphism, or colour used for decoration.",
+    "keyCharacteristics": [
+      "Grey desk, white sheets, black ink; colour appears only as highlighter.",
+      "Exactly two highlighter meanings: yellow found, pink missing (with a dotted underline).",
+      "Chivo for the site voice, Chivo Mono only for figures and extracted text, Helvetica for documents.",
+      "Black rectangular buttons with 3px paper corners.",
+      "Swipes with ragged ends, drawn once in reading order; yellow text selection."
+    ],
+    "rules": [
+      {
+        "name": "The Two Highlighters Rule",
+        "body": "There are exactly two highlighter meanings: yellow means found or in your resume, pink means missing and add only if true. Emphasis anywhere else uses weight or ink, never highlighter colour. The one exception is the hero headline and wordmark swipes, which use yellow.",
+        "section": "colors"
+      },
+      {
+        "name": "The Second Cue Rule",
+        "body": "A pink mark always carries its dotted miss-ink underline, and screen readers hear \"(missing)\" unless the words already say it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Is The Accent Rule",
+        "body": "Primary actions are black on white or white on black. No hue is introduced for buttons, links, or status.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Means Machine Rule",
+        "body": "Chivo Mono appears only for figures and for text a parser extracted. Never for headings or prose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Documents Stay Documents Rule",
+        "body": "Anything representing a posting or resume is set in the standard document face; resume templates themselves are governed by their own theme definitions, not by these tokens.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper On A Desk Rule",
+        "body": "Only paper casts a shadow, and it casts the same one everywhere. Controls, toggles and buttons are flat.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put content on white sheets with the single sheet shadow over the desk grey.",
+      "Do use Found Yellow only for found / in-your-resume marks, plus the hero headline and wordmark swipes.",
+      "Do give every Missing Pink mark its dotted miss-ink underline.",
+      "Do set every count, score, price and credit cost in Chivo Mono with tabular figures.",
+      "Do set sample postings and rewrite examples in the document face, labelled as samples.",
+      "Do make primary actions ink-black rectangles with 3px corners.",
+      "Do draw swipes and roll digits once, and show them finished under reduced motion."
+    ],
+    "donts": [
+      "Don't use highlighter colour for emphasis; use weight or ink.",
+      "Don't introduce a third highlighter colour or any accent hue for buttons, links, or status.",
+      "Don't use gradients, blobs, pills, or icon tiles.",
+      "Don't round corners past 8px, or add hover lift or extra shadow levels.",
+      "Don't set headings or prose in Chivo Mono."
+    ]
+  }
+}

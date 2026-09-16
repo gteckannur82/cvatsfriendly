@@ -1,23 +1,16 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import {
-  ArrowRight,
-  BadgeCheck,
-  Check,
-  FileDown,
-  FileSearch,
-  History,
-  LayoutTemplate,
-  ScanText,
-  Sparkles,
-  Target,
-  Wand2,
-  X,
-} from 'lucide-react'
-import { useMemo } from 'react'
+import { ArrowRight, Plus } from 'lucide-react'
+import { useMemo, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { RollingNumber, renderRuns, Swipe } from '~/components/marks'
 import { PricingCards } from '~/components/PricingCards'
 import { ScaledResume } from '~/components/preview/ResumeHtml'
-import { sampleResume } from '~/lib/resume/schema'
-import { getTheme, THEMES } from '~/lib/resume/themes'
+import { AI_CREDIT_COST, PLAN_LIMITS } from '~/lib/plans'
+import { keywordMatch } from '~/lib/resume/ats'
+import { formatDateRange } from '~/lib/resume/format'
+import { markKeywords, type MarkKind } from '~/lib/resume/highlight'
+import { SAMPLE_POSTING, samplePostingText } from '~/lib/resume/sample-posting'
+import { sampleResume, type ResumeData } from '~/lib/resume/schema'
+import { THEMES } from '~/lib/resume/themes'
 import { seo } from '~/lib/site'
 
 export const Route = createFileRoute('/_site/')({
@@ -36,19 +29,19 @@ const FAQ = [
   },
   {
     q: 'Will the AI make things up?',
-    a: 'No — it is instructed to never invent employers, numbers or results. It rewrites what you give it for clarity and impact, and it tells you where adding a real metric would help. You review and accept every change.',
+    a: 'It is instructed never to add employers, tools, numbers or results that are not already in what you wrote. If a bullet has no number, the rewrite will not make one up, so add the real figure yourself. You choose which suggestions to keep before anything changes.',
   },
   {
     q: 'How does tailoring to a job description work?',
-    a: 'Paste the job posting. We instantly show which keywords you already match and which are missing. With one click, the AI rewrites your summary and bullets to foreground the most relevant experience, and you can save the result as a new version or a separate copy for that application.',
+    a: 'Paste the job posting. You see which of its keywords your resume already contains and which are missing. The AI can then rewrite your summary and bullets to put your most relevant experience first. Tick the changes you want, then save them as a new version or as a separate copy for that application.',
   },
   {
     q: 'Can I cancel Pro anytime?',
     a: 'Yes. Manage or cancel your subscription from the billing page at any time. You keep Pro until the end of the billing period, and your resumes stay available on the Free plan afterward.',
   },
   {
-    q: 'Can I import an existing resume?',
-    a: 'You can import a RenderCV-compatible YAML or JSON file, or start from our sample and edit it. Every resume can also be exported back to YAML so your data is never locked in.',
+    q: 'Can I import my existing resume?',
+    a: 'Not from PDF or Word yet. You can import a YAML or JSON resume file (the open RenderCV format), or start from a filled-in sample and replace the details. Every resume exports back to YAML or JSON, so your data is never locked in.',
   },
 ]
 
@@ -56,217 +49,35 @@ function Landing() {
   const sample = useMemo(() => sampleResume(), [])
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-white to-white">
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-brand-200/30 blur-3xl" />
-        <div className="container-page relative grid items-center gap-12 py-14 lg:grid-cols-[1.05fr_1fr] lg:py-20">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-semibold text-brand-700">
-              <Sparkles className="h-3.5 w-3.5" /> AI resume builder for job seekers
-            </span>
-            <h1 className="mt-5 font-display text-4xl leading-[1.08] font-extrabold tracking-tight text-ink sm:text-5xl lg:text-6xl">
-              A resume that gets past the ATS <span className="text-brand-600">and</span> impresses the recruiter.
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-slate-600">
-              Fill in a guided form, let AI turn duties into measurable achievements, tailor it to any job description in seconds, and
-              download a clean PDF that applicant tracking systems read perfectly.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link to="/signup" className="btn-primary px-6 py-3 text-base">
-                Build my resume — free <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link to="/templates" className="btn-outline px-6 py-3 text-base">
-                See templates
-              </Link>
-            </div>
-            <ul className="mt-8 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-              {['No credit card required', 'Text-based PDF export', 'AI that never invents facts', 'Keyword match score'].map((t) => (
-                <li key={t} className="flex items-center gap-2">
-                  <BadgeCheck className="h-4 w-4 text-brand-600" /> {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="rotate-1 overflow-hidden rounded-lg">
-              <ScaledResume data={sample} theme={getTheme('classic')} />
-            </div>
-            <div className="absolute -bottom-5 -left-3 hidden w-60 rounded-xl border border-slate-200 bg-white p-4 shadow-xl sm:block">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">ATS score</span>
-                <span className="font-display text-2xl font-extrabold text-brand-600">92</span>
-              </div>
-              <div className="mt-2 h-2 rounded-full bg-slate-100">
-                <div className="h-2 w-[92%] rounded-full bg-brand-500" />
-              </div>
-              <p className="mt-2 text-xs text-slate-500">18 of 21 job keywords matched</p>
-            </div>
-            <div className="absolute -top-4 -right-2 hidden w-64 rounded-xl border border-slate-200 bg-white p-3 text-xs shadow-xl sm:block">
-              <div className="flex items-center gap-1.5 font-semibold text-brand-700">
-                <Wand2 className="h-3.5 w-3.5" /> AI rewrite
-              </div>
-              <p className="mt-1.5 text-slate-400 line-through">Responsible for the billing system</p>
-              <p className="mt-1 text-slate-800">Designed usage-based billing that grew expansion revenue 18% in two quarters</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero sample={sample} />
+      <ParseSection sample={sample} />
+      <RewriteSection />
+      <EditorSection />
+      <TemplatesSection sample={sample} />
 
-      {/* Problem */}
-      <section className="border-y border-slate-200 bg-slate-50 py-14">
-        <div className="container-page grid gap-8 md:grid-cols-3">
-          {[
-            { stat: 'Parsed first', text: 'Most mid-size and large employers run applications through an ATS before a person sees them.' },
-            { stat: 'Seconds', text: 'That is roughly how long a recruiter skims a resume before deciding to read on.' },
-            { stat: 'Keywords', text: 'Resumes are searched and ranked by the skills and titles in the job description.' },
-          ].map((s) => (
-            <div key={s.stat}>
-              <p className="font-display text-2xl font-extrabold text-ink">{s.stat}</p>
-              <p className="mt-2 text-slate-600">{s.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20" id="features">
+      <section className="border-t border-desk-rule bg-desk py-20 sm:py-24" id="pricing">
         <div className="container-page">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Everything between a blank page and an interview</h2>
-            <p className="mt-4 text-lg text-slate-600">Built around how hiring actually works: software filters first, humans skim second.</p>
-          </div>
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { icon: LayoutTemplate, title: 'Guided resume form', text: 'Step through contact, summary, experience, education and skills. The preview updates as you type.' },
-              { icon: Wand2, title: 'AI bullet rewriter', text: 'Turn “responsible for…” into outcome-first achievements. Pick from three rewrites or improve a whole role at once.' },
-              { icon: Target, title: 'Tailor to any job', text: 'Paste a job description to see matched and missing keywords, then let AI align your summary and bullets.' },
-              { icon: ScanText, title: 'ATS health check', text: 'Ten checks for contact info, metrics, action verbs, length and pronouns — each with a fix.' },
-              { icon: History, title: 'Versions & copies', text: 'Save a named version before big edits and keep a tailored copy for every application.' },
-              { icon: FileDown, title: 'Clean PDF export', text: 'Text-based, single-column PDFs in Letter or A4 that parse cleanly in Workday, Greenhouse and Lever.' },
-            ].map((f) => (
-              <div key={f.title} className="card p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                  <f.icon className="h-5 w-5" />
-                </div>
-                <h3 className="mt-4 font-display text-lg font-bold text-ink">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{f.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="bg-ink py-20 text-white">
-        <div className="container-page">
-          <h2 className="text-center font-display text-3xl font-extrabold tracking-tight sm:text-4xl">Three steps to a better resume</h2>
-          <div className="mt-14 grid gap-10 md:grid-cols-3">
-            {[
-              { n: '01', title: 'Fill in the guided form', text: 'Start from scratch, from a sample, or import a RenderCV YAML file.' },
-              { n: '02', title: 'Improve and tailor with AI', text: 'Rewrite bullets for impact and match the wording of the job you want.' },
-              { n: '03', title: 'Download and apply', text: 'Choose a template, run the ATS check, and export a polished PDF.' },
-            ].map((s) => (
-              <div key={s.n}>
-                <span className="font-display text-5xl font-extrabold text-brand-500/80">{s.n}</span>
-                <h3 className="mt-3 font-display text-xl font-bold">{s.title}</h3>
-                <p className="mt-2 text-slate-300">{s.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Templates */}
-      <section className="py-20">
-        <div className="container-page">
-          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Recruiter-approved templates</h2>
-              <p className="mt-3 max-w-xl text-lg text-slate-600">Single-column layouts with standard fonts and headings. Switch anytime without retyping.</p>
-            </div>
-            <Link to="/templates" className="btn-outline">
-              All templates <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="mt-10 flex snap-x gap-5 overflow-x-auto pb-4">
-            {THEMES.map((t) => (
-              <div key={t.id} className="w-60 shrink-0 snap-start sm:w-64">
-                <div className="overflow-hidden rounded-lg border border-slate-200">
-                  <ScaledResume data={sample} theme={t} />
-                </div>
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="font-semibold text-ink">{t.name}</span>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${t.pro ? 'bg-amber-100 text-amber-800' : 'bg-brand-50 text-brand-700'}`}>
-                    {t.pro ? 'Pro' : 'Free'}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Comparison */}
-      <section className="bg-slate-50 py-20">
-        <div className="container-page">
-          <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Why fancy resume designs get filtered out</h2>
-          <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
-            <div className="card p-6">
-              <h3 className="flex items-center gap-2 font-display font-bold text-red-700">
-                <X className="h-5 w-5" /> Common design-heavy resumes
-              </h3>
-              <ul className="mt-4 space-y-2 text-sm text-slate-700">
-                {['Two columns that parse out of order', 'Skills shown as graphics or rating bars', 'Contact details in headers or text boxes', 'Creative headings the ATS doesn’t recognise', 'Text flattened into an image'].map((t) => (
-                  <li key={t} className="flex gap-2">
-                    <X className="h-4 w-4 shrink-0 text-red-500" /> {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="card border-brand-200 p-6">
-              <h3 className="flex items-center gap-2 font-display font-bold text-brand-700">
-                <Check className="h-5 w-5" /> CV ATS Friendly resumes
-              </h3>
-              <ul className="mt-4 space-y-2 text-sm text-slate-700">
-                {['Single-column, top-to-bottom reading order', 'Skills as plain, searchable keywords', 'Contact info in the document body', 'Standard headings: Experience, Education, Skills', 'Real, selectable text in every PDF'].map((t) => (
-                  <li key={t} className="flex gap-2">
-                    <Check className="h-4 w-4 shrink-0 text-brand-600" /> {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <p className="mt-8 text-center">
-            <Link to="/ats-resume-guide" className="inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline">
-              <FileSearch className="h-4 w-4" /> Read the full ATS resume guide
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-20" id="pricing">
-        <div className="container-page">
-          <div className="mx-auto mb-12 max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Simple pricing</h2>
-            <p className="mt-3 text-lg text-slate-600">Start free. Upgrade when you’re applying to lots of roles.</p>
+          <div className="mb-12 max-w-2xl">
+            <h2 className="font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance text-ink">
+              Start free. Pay for the months you’re applying.
+            </h2>
+            <p className="mt-4 text-lg text-ink-soft">Cancel from the billing page whenever you land the role.</p>
           </div>
           <PricingCards />
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="border-t border-slate-200 py-20">
-        <div className="container-page max-w-3xl">
-          <h2 className="text-center font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Frequently asked questions</h2>
-          <div className="mt-10 divide-y divide-slate-200 rounded-2xl border border-slate-200">
+      <section className="border-t border-desk-rule bg-desk py-16 sm:py-20">
+        <div className="container-page grid grid-cols-1 gap-10 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-16">
+          <h2 className="font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-ink">Questions</h2>
+          <div className="sheet min-w-0 px-6 sm:px-9">
             {FAQ.map((f) => (
-              <details key={f.q} className="group px-5 py-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-ink">
+              <details key={f.q} className="group border-b border-slate-200 last:border-b-0">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-6 py-4 text-left text-lg font-bold text-ink [&::-webkit-details-marker]:hidden">
                   {f.q}
-                  <span className="text-xl text-slate-400 transition group-open:rotate-45">+</span>
+                  <Plus className="h-5 w-5 shrink-0 transition-transform duration-200 group-open:rotate-45" aria-hidden="true" />
                 </summary>
-                <p className="mt-3 text-slate-600">{f.a}</p>
+                <p className="max-w-[65ch] pb-6 leading-relaxed text-ink-soft">{f.a}</p>
               </details>
             ))}
           </div>
@@ -283,18 +94,476 @@ function Landing() {
         />
       </section>
 
-      {/* CTA */}
-      <section className="pb-20">
+      <section className="border-t border-desk-rule bg-desk py-20 sm:py-32">
         <div className="container-page">
-          <div className="rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 px-6 py-14 text-center text-white sm:px-12">
-            <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">Your next application deserves a better resume</h2>
-            <p className="mx-auto mt-3 max-w-xl text-brand-100">Build it in minutes. Free to start, no credit card.</p>
-            <Link to="/signup" className="btn mt-8 bg-white px-6 py-3 text-base text-brand-800 hover:bg-brand-50">
-              Create my resume <ArrowRight className="h-4 w-4" />
+          <h2 className="max-w-4xl font-display text-[clamp(2.4rem,5vw,4.25rem)] leading-[0.98] font-extrabold tracking-[-0.035em] text-balance text-ink">
+            Paste the posting. See what’s <Swipe kind="missing" announce={false}>missing</Swipe>. Add only what’s true.
+          </h2>
+          <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link to="/signup" className="btn-primary px-6 py-3.5 text-base">
+              Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
+            <p className="text-ink-soft">Free plan. No credit card.</p>
           </div>
         </div>
       </section>
     </>
+  )
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Hero: the sample posting, marked by the real keyword matcher                              */
+/* ------------------------------------------------------------------------------------------ */
+
+function Hero({ sample }: { sample: ResumeData }) {
+  return (
+    <section className="overflow-hidden bg-desk">
+      <div className="container-page grid grid-cols-1 items-start gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-14 lg:pt-16 lg:pb-24">
+        <div className="lg:pt-4">
+          <h1 className="font-display text-[clamp(2.5rem,5.2vw,4.4rem)] leading-[0.97] font-extrabold tracking-[-0.035em] text-balance text-ink">
+            A resume that gets{' '}
+            <Swipe draw index={0}>
+              past the ATS
+            </Swipe>{' '}
+            and impresses the recruiter.
+          </h1>
+          <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-ink-soft">
+            Most employers screen applications with an applicant tracking system (ATS) before a recruiter reads them. Build yours in a guided form, tailor it
+            to each posting, and export a PDF the ATS can read.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
+            <Link to="/signup" className="btn-primary px-6 py-3.5 text-base">
+              Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link to="/templates" className="inline-flex min-h-11 items-center font-bold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+              See the templates
+            </Link>
+          </div>
+          <p className="mt-7 text-sm text-ink-soft">Free plan, no credit card · Text-based PDF · You approve every AI edit</p>
+        </div>
+        <PostingSheet sample={sample} />
+      </div>
+    </section>
+  )
+}
+
+function PostingSheet({ sample }: { sample: ResumeData }) {
+  const match = useMemo(() => keywordMatch(sample, samplePostingText()), [sample])
+  const [isolate, setIsolate] = useState<MarkKind | null>(null)
+  const toggle = (k: MarkKind) => setIsolate((cur) => (cur === k ? null : k))
+
+  const mark = (text: string, startIndex: number) => renderRuns(markKeywords(text, match.matched, match.missing), { draw: true, startIndex, isolate })
+  const title = mark(SAMPLE_POSTING.title, 1)
+  let next = 1 + title.count
+  const lines = SAMPLE_POSTING.lines.map((l) => {
+    const r = mark(l, next)
+    next += r.count
+    return r.nodes
+  })
+
+  return (
+    <figure className="mx-auto w-full max-w-[33rem] min-w-0 lg:mt-2">
+      <div className="relative flex flex-col gap-4 lg:block">
+        <Tally found={match.matched.length} missing={match.missing.length} total={match.keywords.length} score={match.score} isolate={isolate} onToggle={toggle} />
+        <div className="sheet relative px-6 pt-4 pb-8 font-document sm:px-9 lg:rotate-[0.7deg] lg:pb-60">
+          <div className="flex items-baseline justify-between gap-4 border-b border-slate-200 pb-2 text-[13px] text-slate-600">
+            <span className="truncate">{SAMPLE_POSTING.url}</span>
+            <span className="shrink-0">Sample posting, fictional</span>
+          </div>
+          <h2 className="mt-6 text-xl leading-tight font-bold text-black">{title.nodes}</h2>
+          <p className="mt-1 text-[15px] text-slate-600">{SAMPLE_POSTING.company}</p>
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-[15px] leading-[1.5] text-black marker:text-slate-400">
+            {lines.map((nodes, i) => (
+              <li key={i}>{nodes}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <figcaption className="mt-4 text-center text-[13px] text-ink-soft lg:text-right">
+        Matched against the sample resume with the same keyword check the editor runs.
+      </figcaption>
+    </figure>
+  )
+}
+
+function Tally({
+  found,
+  missing,
+  total,
+  score,
+  isolate,
+  onToggle,
+}: {
+  found: number
+  missing: number
+  total: number
+  score: number
+  isolate: MarkKind | null
+  onToggle: (k: MarkKind) => void
+}) {
+  return (
+    <div className="sheet z-10 flex flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 lg:absolute lg:bottom-6 lg:-left-12 lg:-rotate-[1.4deg] lg:flex-col lg:items-stretch lg:gap-2 lg:px-4 lg:py-3.5">
+      <div>
+        <p className="flex items-baseline gap-2 text-ink">
+          <span className="text-[2rem] leading-none font-medium">
+            <RollingNumber value={found} />
+            <span className="num text-slate-400">/</span>
+            <span className="num">{total}</span>
+          </span>
+          <span className="num text-base">
+            <RollingNumber value={score} start={500} />%
+          </span>
+        </p>
+        <p className="mt-1 text-[13px] text-ink-soft">keywords matched</p>
+      </div>
+      <div className="flex flex-wrap gap-1.5 lg:flex-col" role="group" aria-label="Show highlights">
+        <KeyButton kind="found" label="In the resume" count={found} active={isolate === 'found'} onClick={() => onToggle('found')} />
+        <KeyButton kind="missing" label="Missing, add if true" count={missing} active={isolate === 'missing'} onClick={() => onToggle('missing')} />
+      </div>
+    </div>
+  )
+}
+
+function KeyButton({ kind, label, count, active, onClick }: { kind: MarkKind; label: string; count: number; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`flex min-h-11 items-center gap-2 rounded-[3px] border px-2 text-left text-[13px] transition-colors lg:min-h-9 ${
+        active ? 'border-ink bg-ink text-white' : 'border-transparent text-ink hover:border-slate-300'
+      }`}
+    >
+      <span aria-hidden="true" className={`h-3 w-5 rounded-[2px] ${kind === 'found' ? 'bg-mark' : 'bg-miss'}`} />
+      <span className="flex-1">{label}</span>
+      <span className="num">{count}</span>
+    </button>
+  )
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* What a parser extracts                                                                     */
+/* ------------------------------------------------------------------------------------------ */
+
+function ParseSection({ sample }: { sample: ResumeData }) {
+  const b = sample.basics
+  const job = sample.experience[0]
+  const edu = sample.education[0]
+  const firstBullet = job.highlights[0].replace(/\*\*/g, '')
+  const range = formatDateRange(job.startDate, job.endDate)
+
+  // What a left-to-right read across a two-column layout commonly produces.
+  const scrambled: { text: string; bad?: boolean; head?: boolean }[] = [
+    { text: b.name.toUpperCase() },
+    { text: `CONTACT ${b.headline}`, bad: true },
+    { text: `${b.email} EXPERIENCE`, bad: true },
+    { text: `${b.phone} ${job.position}`, bad: true },
+    { text: `SKILLS ${job.company} ${range}`, bad: true },
+    { text: `${sample.skills[0].details} ${firstBullet.slice(0, 44)}`, bad: true },
+    { text: `EDUCATION ${firstBullet.slice(44, 92)}…`, bad: true },
+  ]
+  const clean: { text: string; head?: boolean }[] = [
+    { text: b.name },
+    { text: b.headline },
+    { text: [b.location, b.email, b.phone].join(' · ') },
+    { text: 'EXPERIENCE', head: true },
+    { text: `${job.position}, ${job.company}, ${range}` },
+    { text: `${firstBullet.slice(0, 70)}…` },
+    { text: 'SKILLS', head: true },
+    { text: `${sample.skills[0].label}: ${sample.skills[0].details}` },
+    { text: 'EDUCATION', head: true },
+    { text: `${edu.degree} ${edu.area}, ${edu.institution}` },
+  ]
+
+  return (
+    <section className="border-t border-desk-rule bg-desk py-20 sm:py-24">
+      <div className="container-page">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end">
+          <h2 className="font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance text-ink">
+            What an ATS pulls out of your resume
+          </h2>
+          <p className="text-lg leading-relaxed text-ink-soft">
+            Parsers read the text layer of your PDF. Two columns often come out interleaved. One column comes out in order.
+          </p>
+        </div>
+
+        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+          <ExtractPanel
+            title="Two-column design"
+            caption="Illustration of a common parsing failure"
+            notes={['Sidebar and main column read across each other', 'Headings land mid-line, so fields get misfiled', 'Skills bars and icons carry no text at all']}
+            tone="missing"
+          >
+            {scrambled.map((l, i) => (
+              <li key={i}>{l.bad ? <Swipe kind="missing">{l.text}</Swipe> : l.text}</li>
+            ))}
+          </ExtractPanel>
+          <ExtractPanel
+            title="CV ATS Friendly template"
+            caption="The sample resume’s text, in reading order"
+            notes={['One column, top to bottom', 'Standard headings a parser recognizes', 'Contact details in the body, skills as plain words']}
+            tone="found"
+          >
+            {clean.map((l, i) => (
+              <li key={i}>{l.head ? <Swipe>{l.text}</Swipe> : l.text}</li>
+            ))}
+          </ExtractPanel>
+        </div>
+
+        <p className="mt-8">
+          <Link to="/ats-resume-guide" className="inline-flex min-h-11 items-center font-bold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+            Read the full ATS resume guide
+          </Link>
+        </p>
+      </div>
+    </section>
+  )
+}
+
+function ExtractPanel({
+  title,
+  caption,
+  notes,
+  tone,
+  children,
+}: {
+  title: string
+  caption: string
+  notes: string[]
+  tone: MarkKind
+  children: ReactNode
+}) {
+  return (
+    <div className="sheet flex min-w-0 flex-col px-5 py-5 sm:px-7 sm:py-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-ink pb-3">
+        <h3 className="text-xl font-bold text-ink">{title}</h3>
+        <p className="text-[13px] text-ink-soft">{caption}</p>
+      </div>
+      <ol aria-label="Extracted text" className="num mt-4 space-y-1.5 overflow-x-auto text-[13px] leading-[1.45] break-words text-ink">
+        {children}
+      </ol>
+      <ul className="mt-5 space-y-1.5 border-t border-slate-200 pt-4 text-[15px] text-ink-soft">
+        {notes.map((n) => (
+          <li key={n} className="flex gap-2.5">
+            <span aria-hidden="true" className={`mt-[0.55em] h-1.5 w-3 shrink-0 ${tone === 'found' ? 'bg-mark' : 'bg-miss'}`} />
+            {n}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Rewrites that keep the facts                                                               */
+/* ------------------------------------------------------------------------------------------ */
+
+function RewriteSection() {
+  return (
+    <section className="border-t border-desk-rule bg-desk py-20 sm:py-28">
+      <div className="container-page grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16">
+        <div>
+          <h2 className="font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance text-ink">
+            AI rewrites that keep your facts
+          </h2>
+          <p className="mt-5 text-lg leading-relaxed text-ink-soft">
+            The AI rewrites for impact but is told never to add numbers, tools or results you didn’t give it. Every highlighted fact in a suggestion traces back
+            to your own words.
+          </p>
+          <p className="mt-5 text-lg leading-relaxed text-ink-soft">You pick which suggestion to keep. Nothing changes until you do.</p>
+          <Link to="/signup" className="btn-primary mt-8 px-6 py-3.5 text-base">
+            Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+
+        <figure className="min-w-0">
+          <div className="sheet px-6 pb-6 sm:px-9 sm:pb-8">
+            <RewriteRow
+              before={
+                <>
+                  Worked on <Swipe>Stripe usage-based billing</Swipe>, <Swipe>expansion revenue</Swipe> up <Swipe>18%</Swipe> over{' '}
+                  <Swipe>2 quarters</Swipe>
+                </>
+              }
+              after={
+                <>
+                  Designed <Swipe>usage-based billing on Stripe</Swipe> that grew <Swipe>expansion revenue 18%</Swipe> in <Swipe>two quarters</Swipe>
+                </>
+              }
+            />
+            <RewriteRow
+              before={<>Helped new engineers get up to speed</>}
+              after={<>Mentored new engineers through their first months on the team</>}
+              note={
+                <>
+                  <Swipe kind="missing">No number given, so none added.</Swipe> How many engineers? Add it if you know it.
+                </>
+              }
+            />
+          </div>
+          <figcaption className="mt-4 text-[13px] text-ink-soft">Illustrative examples of suggested rewrites.</figcaption>
+        </figure>
+      </div>
+    </section>
+  )
+}
+
+function RewriteRow({ before, after, note }: { before: ReactNode; after: ReactNode; note?: ReactNode }) {
+  return (
+    <div className="grid grid-cols-1 gap-4 border-b border-slate-200 pt-6 pb-6 font-document last:border-b-0 last:pb-0 sm:grid-cols-2 sm:gap-8">
+      <div>
+        <p className="font-sans text-[13px] font-bold text-ink-soft">What you wrote</p>
+        <p className="mt-1.5 text-[15px] leading-relaxed text-slate-700">{before}</p>
+      </div>
+      <div>
+        <p className="font-sans text-[13px] font-bold text-ink-soft">Suggested rewrite</p>
+        <p className="mt-1.5 text-[15px] leading-relaxed text-black">{after}</p>
+        {note ? <p className="mt-3 font-sans text-[15px] leading-relaxed text-ink-soft">{note}</p> : null}
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* The editor, as a plain spec list                                                           */
+/* ------------------------------------------------------------------------------------------ */
+
+const MOBILE_FEATURES = 4
+
+function EditorSection() {
+  const [showAll, setShowAll] = useState(false)
+  const free = PLAN_LIMITS.free
+  const credits = (n: number) => `${n} credit${n === 1 ? '' : 's'}`
+  const items: { term: string; text: string; cost: string }[] = [
+    { term: 'Guided form', text: 'Contact, summary, experience, education and skills, with a live preview as you type.', cost: 'Free' },
+    { term: 'Keyword match', text: 'Paste a posting to see which of its keywords your resume has and which are missing.', cost: 'Free' },
+    { term: 'ATS content check', text: 'Ten checks for contact details, metrics, action verbs, length and pronouns, each with a fix.', cost: 'Free' },
+    { term: 'PDF export', text: 'Text-based, single-column PDF in Letter or A4.', cost: 'Free' },
+    { term: 'Bullet rewriter', text: 'Three rewrites of one bullet, outcome first, no invented numbers.', cost: credits(AI_CREDIT_COST.rewriteBullet) },
+    { term: 'Role improver', text: 'Rewrites every bullet in a role at once and removes repeated ideas.', cost: credits(AI_CREDIT_COST.improveRole) },
+    { term: 'Summary writer', text: 'Two summary options drawn from what your resume already says.', cost: credits(AI_CREDIT_COST.writeSummary) },
+    { term: 'Tailor to a job', text: 'Rewrites your summary and bullets toward one posting; you tick the changes to keep.', cost: credits(AI_CREDIT_COST.tailorResume) },
+    { term: 'Versions and copies', text: 'Save a named version before big edits, or keep a tailored copy per application.', cost: `${free.maxVersionsPerResume} free` },
+    { term: 'Import and export', text: 'YAML or JSON in the open RenderCV format, so your data is never locked in.', cost: 'Free' },
+  ]
+  return (
+    <section className="border-t border-desk-rule bg-desk py-20 sm:py-24">
+      <div className="container-page">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end">
+          <h2 className="font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance text-ink">
+            What’s in the editor
+          </h2>
+          <p className="text-lg leading-relaxed text-ink-soft">
+            Free covers the whole resume. AI features spend credits: {free.aiPerDay} a day on Free, {PLAN_LIMITS.pro.aiPerDay} on Pro.
+          </p>
+        </div>
+        <dl id="editor-features" className="sheet mt-12 grid grid-cols-1 px-6 sm:px-9 md:grid-cols-2 md:gap-x-12">
+          {items.map((it, i) => (
+            <div
+              key={it.term}
+              className={`grid-cols-[minmax(0,1fr)_auto] gap-x-6 border-b border-slate-200 py-5 md:grid ${showAll || i < MOBILE_FEATURES ? 'grid' : 'hidden'}`}
+            >
+              <dt className="font-bold text-ink">{it.term}</dt>
+              <dd className={`num row-span-2 pt-0.5 text-right text-[13px] ${it.cost === 'Free' ? 'text-ink-soft' : 'text-ink'}`}>{it.cost}</dd>
+              <dd className="mt-1 text-[15px] leading-relaxed text-ink-soft">{it.text}</dd>
+            </div>
+          ))}
+        </dl>
+        {showAll ? null : (
+          <button
+            type="button"
+            aria-expanded={showAll}
+            aria-controls="editor-features"
+            onClick={() => setShowAll(true)}
+            className="btn-outline mt-4 w-full py-3 md:hidden"
+          >
+            Show all {items.length} features
+          </button>
+        )}
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Templates: pick one, read it at a real size                                                */
+/* ------------------------------------------------------------------------------------------ */
+
+function TemplatesSection({ sample }: { sample: ResumeData }) {
+  const [activeId, setActiveId] = useState(THEMES[0].id)
+  const active = THEMES.find((t) => t.id === activeId) ?? THEMES[0]
+  const onTabKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const i = THEMES.findIndex((t) => t.id === active.id)
+    const next = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: THEMES.length - 1 }[e.key]
+    if (next === undefined) return
+    e.preventDefault()
+    const t = THEMES[(next + THEMES.length) % THEMES.length]
+    setActiveId(t.id)
+    document.getElementById(`template-tab-${t.id}`)?.focus()
+  }
+  return (
+    <section className="overflow-hidden border-t border-desk-rule bg-desk py-20 sm:py-28">
+      <div className="container-page">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-end">
+          <h2 className="font-display text-[clamp(2rem,3.6vw,3rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-balance text-ink">
+            Five templates, all single-column
+          </h2>
+          <p className="text-lg leading-relaxed text-ink-soft">Standard fonts and headings in every one. Switch at any time without retyping.</p>
+        </div>
+        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-14">
+          <div className="min-w-0">
+            <div
+              role="tablist"
+              aria-label="Templates"
+              onKeyDown={onTabKey}
+              className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:border-t lg:border-ink lg:px-0 lg:pb-0"
+            >
+              {THEMES.map((t) => {
+                const selected = t.id === active.id
+                return (
+                  <button
+                    key={t.id}
+                    id={`template-tab-${t.id}`}
+                    role="tab"
+                    tabIndex={selected ? 0 : -1}
+                    aria-selected={selected}
+                    aria-controls="template-preview"
+                    onClick={() => setActiveId(t.id)}
+                    className={`min-h-11 shrink-0 rounded-[3px] border px-3 py-2 text-left transition-colors lg:rounded-none lg:border-0 lg:border-b lg:border-slate-300 lg:px-0 lg:py-3.5 ${
+                      selected ? 'border-ink bg-white lg:bg-transparent' : 'border-slate-300 hover:bg-white/60 lg:hover:bg-transparent'
+                    }`}
+                  >
+                    <span className="flex items-center justify-between gap-4">
+                      <span className={`font-bold ${selected ? 'text-ink lg:underline lg:decoration-2 lg:underline-offset-4' : 'text-ink-soft'}`}>{t.name}</span>
+                      <span className="num text-[13px] text-ink-soft">{t.pro ? 'Pro' : 'Free'}</span>
+                    </span>
+                    <span className="mt-1 hidden text-[15px] leading-snug text-ink-soft lg:block">{t.description}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <Link to="/signup" className="btn-primary mt-8 hidden px-6 py-3.5 text-base lg:inline-flex">
+              Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <div id="template-preview" role="tabpanel" aria-labelledby={`template-tab-${active.id}`} tabIndex={0} className="relative min-w-0">
+            <div className="-mx-4 h-[30rem] overflow-x-auto overflow-y-hidden px-4 sm:mx-0 sm:h-[36rem] sm:overflow-hidden sm:px-0 lg:h-[40rem]">
+              <div className="mx-auto w-full max-w-[46rem] min-w-[34rem] sm:min-w-0">
+                <ScaledResume data={sample} theme={active} />
+              </div>
+            </div>
+            <p className="mt-4 text-[13px] text-ink-soft">
+              {active.name}, first page, shown with the sample resume ·{' '}
+              <Link to="/templates" className="font-bold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+                Compare all templates
+              </Link>
+            </p>
+            <Link to="/signup" className="btn-primary mt-6 w-full px-6 py-3.5 text-base lg:hidden">
+              Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }

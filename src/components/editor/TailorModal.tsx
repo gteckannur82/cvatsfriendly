@@ -1,10 +1,12 @@
-import { Copy, Sparkles, Target } from 'lucide-react'
+import { Check, Copy, Plus, Sparkles, Target } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { aiTailorResume } from '~/functions/ai.fn'
 import type { TailorResult } from '~/server/ai'
 import { readError } from '~/lib/errors'
+import { AI_CREDIT_COST } from '~/lib/plans'
 import { keywordMatch } from '~/lib/resume/ats'
 import { uid, type ResumeData } from '~/lib/resume/schema'
+import { Swipe } from '../marks'
 import { ErrorNote, Modal, Spinner } from '../ui'
 
 interface Props {
@@ -118,18 +120,17 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
                 {match.score}%{tailoredMatch ? <span className="ml-2 text-sm font-semibold text-brand-700">→ {tailoredMatch.score}% after tailoring</span> : null}
               </span>
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-sm text-ink">
               {match.matched.slice(0, 18).map((k) => (
-                <span key={k} className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-800">
-                  ✓ {k}
-                </span>
+                <Swipe key={k}>{k}</Swipe>
               ))}
               {match.missing.slice(0, 18).map((k) => (
-                <span key={k} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                <Swipe key={k} kind="missing">
                   {k}
-                </span>
+                </Swipe>
               ))}
-            </div>
+            </p>
+            <p className="mt-2 text-[13px] text-slate-600">Yellow: already in your resume. Pink: missing, add only if true.</p>
           </div>
         ) : null}
 
@@ -138,7 +139,7 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
         {!result ? (
           <button className="btn-primary w-full py-2.5" disabled={loading || jobDescription.trim().length < 50} onClick={tailor}>
             {loading ? <Spinner /> : <Sparkles className="h-4 w-4" />}
-            {loading ? 'Tailoring your resume…' : 'Tailor with AI (3 credits)'}
+            {loading ? 'Tailoring your resume…' : `Tailor with AI (${AI_CREDIT_COST.tailorResume} credits)`}
           </button>
         ) : (
           <div className="space-y-4">
@@ -146,7 +147,7 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
               <label className="flex gap-3 rounded-xl border border-slate-200 p-3">
                 <input type="checkbox" className="mt-1 accent-brand-600" checked={pickSummary} onChange={(e) => setPickSummary(e.target.checked)} />
                 <span>
-                  <span className="block text-xs font-semibold text-slate-500 uppercase">New summary</span>
+                  <span className="block text-[13px] font-bold text-ink">New summary</span>
                   <span className="text-sm text-slate-800">{result.summary}</span>
                 </span>
               </label>
@@ -158,12 +159,12 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
                 <label key={r.id} className="flex gap-3 rounded-xl border border-slate-200 p-3">
                   <input type="checkbox" className="mt-1 accent-brand-600" checked={roles.has(r.id)} onChange={() => setRoles((s) => toggle(s, r.id))} />
                   <span className="min-w-0">
-                    <span className="block text-xs font-semibold text-slate-500 uppercase">
+                    <span className="block text-[13px] font-bold text-ink">
                       {exp.position} · {exp.company}
                     </span>
-                    <ul className="mt-1 space-y-1 text-sm text-slate-800">
+                    <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-slate-800">
                       {r.highlights.map((h, i) => (
-                        <li key={i}>• {h}</li>
+                        <li key={i}>{h}</li>
                       ))}
                     </ul>
                   </span>
@@ -172,12 +173,12 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
             })}
             {result.skillsToAdd.length ? (
               <div className="rounded-xl border border-slate-200 p-3">
-                <span className="block text-xs font-semibold text-slate-500 uppercase">Add to skills</span>
+                <span className="block text-[13px] font-bold text-ink">Add to skills</span>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {result.skillsToAdd.map((s) => (
-                    <label key={s} className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs ${skills.has(s) ? 'border-brand-600 bg-brand-50 text-brand-800' : 'border-slate-300 text-slate-600'}`}>
+                    <label key={s} className={`inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-[3px] border px-2.5 text-xs ${skills.has(s) ? 'border-ink bg-mark-tint text-ink' : 'border-slate-300 text-slate-700'}`}>
                       <input type="checkbox" className="sr-only" checked={skills.has(s)} onChange={() => setSkills((x) => toggle(x, s))} />
-                      {skills.has(s) ? '✓ ' : '+ '}
+                      {skills.has(s) ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Plus className="h-3.5 w-3.5" aria-hidden="true" />}
                       {s}
                     </label>
                   ))}
@@ -185,10 +186,17 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
               </div>
             ) : null}
             {result.missingKeywords.length || result.notes.length ? (
-              <div className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
+              <div className="rounded-xl border border-slate-200 p-3 text-sm text-ink">
                 {result.missingKeywords.length ? (
                   <p>
-                    <strong>Not evidenced in your resume:</strong> {result.missingKeywords.join(', ')}. Add them only if they’re true.
+                    <strong>Not evidenced in your resume:</strong>{' '}
+                    {result.missingKeywords.map((k, i) => (
+                      <span key={k}>
+                        {i ? ', ' : null}
+                        <Swipe kind="missing">{k}</Swipe>
+                      </span>
+                    ))}
+                    . Add them only if they’re true.
                   </p>
                 ) : null}
                 {result.notes.length ? (

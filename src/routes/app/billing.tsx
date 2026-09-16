@@ -84,11 +84,11 @@ function Billing() {
 
       <section className="card grid gap-6 p-6 md:grid-cols-3">
         <div>
-          <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">Current plan</p>
+          <p className="text-[13px] font-bold text-ink">Current plan</p>
           <p className="mt-1 flex items-center gap-2 font-display text-2xl font-extrabold text-ink">
             {isPro ? (
               <>
-                Pro <Sparkles className="h-5 w-5 text-amber-500" />
+                Pro <Sparkles className="h-5 w-5 text-ink" aria-hidden="true" />
               </>
             ) : (
               'Free'
@@ -102,16 +102,16 @@ function Billing() {
           ) : null}
         </div>
         <div>
-          <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">AI credits today</p>
+          <p className="text-[13px] font-bold text-ink">AI credits today</p>
           <p className="mt-1 font-display text-2xl font-extrabold text-ink">
-            {usage.used} <span className="text-base font-medium text-slate-500">/ {usage.limit}</span>
+            <span className="num">{usage.used}</span> <span className="num text-base font-medium text-slate-600">/ {usage.limit}</span>
           </p>
-          <div className="mt-2 h-2 rounded-full bg-slate-100">
-            <div className="h-2 rounded-full bg-brand-500" style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100)}%` }} />
+          <div className="mt-2 h-2 bg-slate-200">
+            <div className="h-2 bg-ink" style={{ width: `${Math.min(100, (usage.used / usage.limit) * 100)}%` }} />
           </div>
         </div>
         <div>
-          <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">Limits</p>
+          <p className="text-[13px] font-bold text-ink">Limits</p>
           <p className="mt-1 text-sm text-slate-700">
             {limits.maxResumes} resumes · {limits.maxVersionsPerResume} versions each · {limits.proTemplates ? 'all templates' : '2 templates'}
           </p>

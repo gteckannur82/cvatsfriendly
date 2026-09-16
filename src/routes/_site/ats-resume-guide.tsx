@@ -63,15 +63,14 @@ function Guide() {
   return (
     <article className="py-16 sm:py-20">
       <div className="container-page max-w-3xl">
-        <p className="text-sm font-semibold text-brand-700">Guide</p>
-        <h1 className="mt-2 font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">How to write an ATS-friendly resume</h1>
-        <p className="mt-5 text-lg text-slate-600">
+        <h1 className="font-display text-[clamp(2.4rem,5vw,3.75rem)] leading-[0.98] font-extrabold tracking-[-0.035em] text-balance text-ink">How to write an ATS-friendly resume</h1>
+        <p className="mt-5 text-lg leading-relaxed text-ink-soft">
           A practical guide to getting your resume parsed correctly, ranked for the right searches, and read by a human.
         </p>
         <div className="mt-12 space-y-12">
           {sections.map((s) => (
             <section key={s.h}>
-              <h2 className="font-display text-2xl font-bold text-ink">{s.h}</h2>
+              <h2 className="border-t border-ink pt-4 font-display text-2xl font-extrabold tracking-[-0.02em] text-ink">{s.h}</h2>
               {s.p?.map((t) => (
                 <p key={t} className="mt-4 leading-relaxed text-slate-700">
                   {t}
@@ -87,13 +86,13 @@ function Guide() {
               {s.examples ? (
                 <div className="mt-5 space-y-3">
                   {s.examples.map((e) => (
-                    <div key={e.bad} className="grid gap-2 rounded-xl border border-slate-200 p-4 text-sm sm:grid-cols-2">
-                      <p className="text-slate-500">
-                        <span className="font-semibold text-red-700">Before: </span>
+                    <div key={e.bad} className="grid gap-3 bg-desk p-4 text-[15px] leading-relaxed sm:grid-cols-2 sm:gap-6">
+                      <p className="text-ink-soft">
+                        <span className="block text-[13px] font-bold text-ink">Before</span>
                         {e.bad}
                       </p>
-                      <p className="text-slate-800">
-                        <span className="font-semibold text-brand-700">After: </span>
+                      <p className="text-ink">
+                        <span className="block text-[13px] font-bold text-ink">After</span>
                         {e.good}
                       </p>
                     </div>
@@ -103,11 +102,11 @@ function Guide() {
             </section>
           ))}
         </div>
-        <div className="mt-16 rounded-2xl bg-brand-50 p-8 text-center">
-          <h2 className="font-display text-2xl font-bold text-ink">Skip the formatting work</h2>
-          <p className="mt-2 text-slate-600">Every CV ATS Friendly template follows these rules, and the built-in ATS check flags what to fix.</p>
+        <div className="mt-16 bg-desk p-8 sm:p-10">
+          <h2 className="font-display text-3xl font-extrabold tracking-[-0.03em] text-ink">Skip the formatting work</h2>
+          <p className="mt-2 text-lg text-ink-soft">Every CV ATS Friendly template follows these rules, and the built-in ATS check flags what to fix.</p>
           <Link to="/signup" className="btn-primary mt-6 px-6 py-3">
-            Build my ATS-friendly resume
+            Build my resume
           </Link>
         </div>
       </div>

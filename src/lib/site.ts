@@ -4,7 +4,7 @@ export const SITE = {
   url: 'https://cvatsfriendly.com',
   tagline: 'AI resume builder that gets past applicant tracking systems',
   description:
-    'Build a clean, ATS-friendly resume in minutes. Guided editor, AI bullet point rewriting, job description tailoring, and recruiter-approved templates. Export to PDF free.',
+    'Build a clean, ATS-friendly resume with a guided editor, AI bullet rewriting, job description tailoring and five single-column templates. Export to PDF free.',
   supportEmail: 'support@cvatsfriendly.com',
 }
 

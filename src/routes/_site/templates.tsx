@@ -18,35 +18,31 @@ export const Route = createFileRoute('/_site/templates')({
 function Templates() {
   const sample = useMemo(() => sampleResume(), [])
   return (
-    <section className="py-16 sm:py-20">
+    <section className="bg-desk py-16 sm:py-20">
       <div className="container-page">
-        <div className="mx-auto max-w-2xl text-center">
-          <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">ATS-friendly resume templates</h1>
-          <p className="mt-4 text-lg text-slate-600">
-            Every template is single-column, uses standard fonts and headings, and exports as real text. Pick a look — the content stays the same.
+        <div className="max-w-3xl">
+          <h1 className="font-display text-[clamp(2.6rem,5vw,4rem)] leading-[0.98] font-extrabold tracking-[-0.035em] text-balance text-ink">ATS-friendly resume templates</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
+            Every template is single-column, uses standard fonts and headings, and exports as real text. Pick a look; your content stays the same.
           </p>
         </div>
         <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {THEMES.map((t) => (
-            <article key={t.id} className="group">
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-3 transition group-hover:shadow-lg">
-                <ScaledResume data={sample} theme={t} />
-              </div>
-              <div className="mt-4 flex items-start justify-between gap-3">
+            <article key={t.id}>
+              <ScaledResume data={sample} theme={t} />
+              <div className="mt-4 flex items-start justify-between gap-3 border-t border-ink pt-3">
                 <div>
-                  <h2 className="font-display text-lg font-bold text-ink">{t.name}</h2>
-                  <p className="mt-1 text-sm text-slate-600">{t.description}</p>
+                  <h2 className="font-display text-xl font-extrabold tracking-[-0.02em] text-ink">{t.name}</h2>
+                  <p className="mt-1 text-[15px] leading-snug text-ink-soft">{t.description}</p>
                 </div>
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${t.pro ? 'bg-amber-100 text-amber-800' : 'bg-brand-50 text-brand-700'}`}>
-                  {t.pro ? 'Pro' : 'Free'}
-                </span>
+                <span className="num shrink-0 pt-1 text-[13px] text-ink">{t.pro ? 'Pro' : 'Free'}</span>
               </div>
             </article>
           ))}
         </div>
-        <div className="mt-16 text-center">
+        <div className="mt-16">
           <Link to="/signup" className="btn-primary px-6 py-3 text-base">
-            Use a template — free
+            Build my resume
           </Link>
         </div>
       </div>

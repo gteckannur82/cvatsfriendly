@@ -6,3 +6,9 @@ dist
 .tanstack
 .DS_Store
 *.log
+
+# Impeccable local artifacts
+.impeccable/hook.cache.json
+.impeccable/review/
+.impeccable/questions/
+.impeccable/live/
