@@ -16,7 +16,7 @@ export function SiteFooter() {
         <FooterColumn title="Product">
           <Link to="/templates" className={link}>Resume templates</Link>
           <Link to="/pricing" className={link}>Pricing</Link>
-          <Link to="/signup" className={link}>Build my resume</Link>
+          <Link to="/build" className={link}>Build my resume</Link>
         </FooterColumn>
         <FooterColumn title="Resources">
           <Link to="/ats-resume-guide" className={link}>What is an ATS-friendly resume?</Link>

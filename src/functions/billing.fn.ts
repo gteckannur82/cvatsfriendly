@@ -5,6 +5,7 @@ import { db } from '~/server/env'
 import { requireUser, toPublicUser } from '~/server/auth'
 import { newId } from '~/server/crypto'
 import { PRO_PERIOD_DAYS, cashfreeConfigured, cashfreeSandbox, createProPaymentLink, proPricePaise, reconcilePayment } from '~/server/cashfree'
+import { applyOffer } from '~/server/offers'
 
 const origin = () => new URL(getRequest().url).origin
 
@@ -20,16 +21,30 @@ const phoneSchema = z
   .transform((v) => v.replace(/[\s()-]/g, '').replace(/^\+/, ''))
   .pipe(z.string().regex(/^[0-9]{8,15}$/, 'Enter a valid mobile number.'))
 
+/** Checks a discount code and shows what Pro would cost, without starting a payment. */
+export const previewOffer = createServerFn({ method: 'POST' })
+  .validator(z.object({ code: z.string().trim().min(1).max(40) }))
+  .handler(async ({ data }) => {
+    await requireUser()
+    return applyOffer(data.code, proPricePaise())
+  })
+
 export const startProPayment = createServerFn({ method: 'POST' })
-  .validator(z.object({ phone: phoneSchema }))
+  .validator(z.object({ phone: phoneSchema, code: z.string().trim().max(40).optional() }))
   .handler(async ({ data }) => {
     const user = await requireUser()
     if (user.plan === 'pro') throw new Error('You are already on Pro.')
 
+    const base = proPricePaise()
+    const applied = data.code ? await applyOffer(data.code, base) : null
+    const amountPaise = applied?.amountPaise ?? base
+
     const linkId = `cvaf_${newId().replace(/-/g, '')}`
     await db()
-      .prepare('INSERT INTO payments (id, user_id, amount_paise, currency, status, created_at) VALUES (?, ?, ?, ?, ?, ?)')
-      .bind(linkId, user.id, proPricePaise(), 'INR', 'created', Math.floor(Date.now() / 1000))
+      .prepare(
+        'INSERT INTO payments (id, user_id, amount_paise, currency, status, offer_code, discount_paise, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      )
+      .bind(linkId, user.id, amountPaise, 'INR', 'created', applied?.code ?? null, applied?.discountPaise ?? 0, Math.floor(Date.now() / 1000))
       .run()
     await db().prepare('UPDATE users SET phone = ? WHERE id = ?').bind(data.phone, user.id).run()
 
@@ -39,6 +54,7 @@ export const startProPayment = createServerFn({ method: 'POST' })
       email: user.email,
       name: user.name,
       phone: data.phone,
+      amountPaise,
       returnUrl: `${origin()}/app/billing?link_id=${linkId}`,
       notifyUrl: `${origin()}/api/cashfree/webhook`,
     })

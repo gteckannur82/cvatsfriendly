@@ -6,8 +6,9 @@ import { PricingCards } from '~/components/PricingCards'
 import { ErrorNote, Spinner } from '~/components/ui'
 import { getAiUsage } from '~/functions/ai.fn'
 import { changePassword } from '~/functions/auth.fn'
-import { confirmProPayment, getBillingConfig, startProPayment } from '~/functions/billing.fn'
+import { confirmProPayment, getBillingConfig, previewOffer, startProPayment } from '~/functions/billing.fn'
 import { readError } from '~/lib/errors'
+import { rupees } from '~/lib/money'
 import { PRO_PRICE_DISPLAY, limitsFor } from '~/lib/plans'
 import { pageTitle } from '~/lib/site'
 
@@ -31,6 +32,8 @@ function Billing() {
   const [pending, setPending] = useState<'checkout' | 'confirm' | null>(search.link_id ? 'confirm' : null)
   const [error, setError] = useState<{ message: string; upgrade: boolean } | null>(null)
   const [outcome, setOutcome] = useState<'paid' | 'unpaid' | null>(null)
+  const [offer, setOffer] = useState<{ code: string; amountPaise: number; discountPaise: number } | null>(null)
+  const [codeError, setCodeError] = useState<string | null>(null)
   const confirmed = useRef(false)
 
   useEffect(() => {
@@ -52,11 +55,22 @@ function Billing() {
     setPending('checkout')
     setError(null)
     try {
-      const { url } = await startProPayment({ data: { phone } })
+      const { url } = await startProPayment({ data: { phone, code: offer?.code } })
       window.location.href = url
     } catch (err) {
       setError(readError(err))
       setPending(null)
+    }
+  }
+
+  async function applyCode(code: string) {
+    setCodeError(null)
+    if (!code.trim()) return setOffer(null)
+    try {
+      setOffer(await previewOffer({ data: { code } }))
+    } catch (err) {
+      setOffer(null)
+      setCodeError(readError(err).message)
     }
   }
 
@@ -143,9 +157,32 @@ function Billing() {
                   autoComplete="tel"
                   className="input"
                 />
+                <label className="label" htmlFor="code">
+                  Discount code (optional)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="code"
+                    name="code"
+                    maxLength={40}
+                    placeholder="LAUNCH50"
+                    autoCapitalize="characters"
+                    className="input uppercase"
+                    onBlur={(e) => applyCode(e.target.value)}
+                  />
+                  <button type="button" className="btn-outline shrink-0" onClick={(e) => applyCode((e.currentTarget.form?.elements.namedItem('code') as HTMLInputElement)?.value ?? '')}>
+                    Apply
+                  </button>
+                </div>
+                {codeError ? <p className="text-xs text-red-700">{codeError}</p> : null}
+                {offer ? (
+                  <p className="text-xs font-semibold text-brand-800">
+                    {offer.code} applied — {rupees(offer.discountPaise)} off, you pay {rupees(offer.amountPaise)}.
+                  </p>
+                ) : null}
                 <button className="btn-primary w-full py-2.5" disabled={!!pending || !config.enabled}>
                   {pending === 'checkout' ? <Spinner /> : <Sparkles className="h-4 w-4" />}
-                  {config.enabled ? `Pay ${PRO_PRICE_DISPLAY} with Cashfree` : 'Payments not configured'}
+                  {config.enabled ? `Pay ${offer ? rupees(offer.amountPaise) : PRO_PRICE_DISPLAY} with Cashfree` : 'Payments not configured'}
                 </button>
                 <p className="text-xs leading-relaxed text-slate-600">
                   Cashfree needs a mobile number for the payment receipt. One payment unlocks Pro for {config.periodDays} days — nothing auto-renews.

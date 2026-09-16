@@ -1,5 +1,9 @@
 # Copy to .dev.vars for local development (never commit .dev.vars)
 
+# --- Admin ---
+# Comma-separated emails that get the /admin dashboard.
+ADMIN_EMAILS=
+
 # --- Cashfree Payments (sandbox) ---
 # From the Cashfree merchant dashboard → Developers → API Keys.
 CASHFREE_APP_ID=

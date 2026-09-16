@@ -8,6 +8,7 @@ import { keywordMatch } from '~/lib/resume/ats'
 import { uid, type ResumeData } from '~/lib/resume/schema'
 import { Swipe } from '../marks'
 import { ErrorNote, Modal, Spinner } from '../ui'
+import { useAccountGate } from './gate'
 
 interface Props {
   open: boolean
@@ -41,6 +42,7 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState<'apply' | 'copy' | null>(null)
   const [error, setError] = useState<{ message: string; upgrade: boolean } | null>(null)
+  const allowAi = useAccountGate()
   const [pickSummary, setPickSummary] = useState(true)
   const [roles, setRoles] = useState<Set<string>>(new Set())
   const [skills, setSkills] = useState<Set<string>>(new Set())
@@ -53,6 +55,7 @@ export function TailorModal({ open, onClose, data, jobDescription, setJobDescrip
   }, [result, match, data, pickSummary, roles, skills, jobDescription])
 
   async function tailor() {
+    if (!allowAi()) return
     setLoading(true)
     setError(null)
     setResult(null)

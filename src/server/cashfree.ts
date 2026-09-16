@@ -1,5 +1,6 @@
 import { db, env } from './env'
 import { hmacSha256Base64, timingSafeEqual } from './crypto'
+import { redeemOffer } from './offers'
 
 /**
  * Cashfree Payments (PG) client, built on Payment Links so the upgrade stays a
@@ -56,12 +57,13 @@ export async function createProPaymentLink(input: {
   email: string
   name: string
   phone: string
+  amountPaise: number
   returnUrl: string
   notifyUrl: string
 }) {
   const link = await cashfree<LinkResponse>('POST', 'links', {
     link_id: input.linkId,
-    link_amount: proPricePaise() / 100,
+    link_amount: input.amountPaise / 100,
     link_currency: 'INR',
     link_purpose: `${env.APP_NAME} Pro — ${PRO_PERIOD_DAYS} days`,
     customer_details: {
@@ -90,7 +92,10 @@ export async function verifyWebhookSignature(rawBody: string, signature: string 
  * once. Safe to call from both the return URL and the webhook, in any order.
  */
 export async function reconcilePayment(linkId: string): Promise<boolean> {
-  const row = await db().prepare('SELECT user_id, status FROM payments WHERE id = ?').bind(linkId).first<{ user_id: string; status: string }>()
+  const row = await db()
+    .prepare('SELECT user_id, status, offer_code FROM payments WHERE id = ?')
+    .bind(linkId)
+    .first<{ user_id: string; status: string; offer_code: string | null }>()
   if (!row) return false
   if (row.status === 'paid') return true
 
@@ -104,6 +109,7 @@ export async function reconcilePayment(linkId: string): Promise<boolean> {
   const user = await db().prepare('SELECT current_period_end FROM users WHERE id = ?').bind(row.user_id).first<{ current_period_end: number | null }>()
   const until = Math.max(now, user?.current_period_end ?? 0) + PRO_PERIOD_DAYS * 86400
   await db().prepare(`UPDATE users SET plan = 'pro', subscription_status = 'active', current_period_end = ? WHERE id = ?`).bind(until, row.user_id).run()
+  if (row.offer_code) await redeemOffer(row.offer_code)
   return true
 }
 

@@ -1,5 +1,5 @@
 import { deleteCookie, getCookie, getRequest, setCookie } from '@tanstack/react-start/server'
-import { db } from './env'
+import { db, env } from './env'
 import { randomToken, sha256Hex } from './crypto'
 
 export const SESSION_COOKIE = 'cvaf_session'
@@ -25,6 +25,7 @@ export interface PublicUser {
   plan: 'free' | 'pro'
   subscriptionStatus: string | null
   currentPeriodEnd: number | null
+  isAdmin: boolean
 }
 
 export function toPublicUser(u: UserRow): PublicUser {
@@ -36,7 +37,17 @@ export function toPublicUser(u: UserRow): PublicUser {
     plan: u.plan === 'pro' ? 'pro' : 'free',
     subscriptionStatus: u.subscription_status,
     currentPeriodEnd: u.current_period_end,
+    isAdmin: isAdminEmail(u.email),
   }
+}
+
+/** Admin rights come from the ADMIN_EMAILS allowlist, so no database row can grant them. */
+export function isAdminEmail(email: string) {
+  return (env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(email.toLowerCase())
 }
 
 const isSecure = () => {
@@ -102,5 +113,11 @@ export class HttpError extends Error {
 export async function requireUser(): Promise<UserRow> {
   const user = await getSessionUser()
   if (!user) throw new HttpError(401, 'Please log in to continue.', 'UNAUTHORIZED')
+  return user
+}
+
+export async function requireAdmin(): Promise<UserRow> {
+  const user = await requireUser()
+  if (!isAdminEmail(user.email)) throw new HttpError(403, 'Admin access required.', 'FORBIDDEN')
   return user
 }

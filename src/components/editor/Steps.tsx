@@ -14,6 +14,7 @@ import {
   type ResumeData,
 } from '~/lib/resume/schema'
 import { THEMES } from '~/lib/resume/themes'
+import { useAccountGate } from './gate'
 import { ErrorNote, Spinner } from '../ui'
 import { BulletsEditor } from './BulletsEditor'
 import { AddButton, DateField, ItemCard, moveItem, StepIntro, TextArea, TextField } from './Fields'
@@ -65,9 +66,11 @@ export function SummaryStep({ data, setData, jobDescription }: StepProps) {
   const [options, setOptions] = useState<string[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<{ message: string; upgrade: boolean } | null>(null)
+  const allowAi = useAccountGate()
   const words = data.summary.trim() ? data.summary.trim().split(/\s+/).length : 0
 
   async function generate() {
+    if (!allowAi()) return
     setLoading(true)
     setError(null)
     try {

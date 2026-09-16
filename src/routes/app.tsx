@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, redirect, useRouter } from '@tanstack/react-router'
-import { FileText, LogOut, Sparkles, User } from 'lucide-react'
+import { FileText, LogOut, Shield, Sparkles, User } from 'lucide-react'
 import { Logo } from '~/components/Logo'
 import { logout } from '~/functions/auth.fn'
 
@@ -33,6 +33,11 @@ function AppLayout() {
               <Link to="/app/billing" className="btn-ghost btn-sm" activeProps={{ className: 'bg-slate-100 text-ink' }}>
                 <User className="h-4 w-4" /> Account
               </Link>
+              {user.isAdmin ? (
+                <Link to="/admin" className="btn-ghost btn-sm" activeProps={{ className: 'bg-slate-100 text-ink' }}>
+                  <Shield className="h-4 w-4" /> Admin
+                </Link>
+              ) : null}
             </nav>
           </div>
           <div className="flex items-center gap-2">

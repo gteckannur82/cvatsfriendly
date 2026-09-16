@@ -1,4 +1,9 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { CheckCircle2, Send } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { ErrorNote, Spinner } from '~/components/ui'
+import { submitEnquiry } from '~/functions/support.fn'
+import { readError } from '~/lib/errors'
 import { SITE, seo } from '~/lib/site'
 
 export const Route = createFileRoute('/_site/contact')({
@@ -21,8 +26,10 @@ function Contact() {
       </p>
 
       <p>
-        {SITE.name} is run by a small team. Email is the fastest way to reach a human, and the same address handles accounts, payments and refunds.
+        {SITE.name} is run by a small team. Send us a message below and we will reply by email — the same address handles accounts, payments and refunds.
       </p>
+
+      <EnquiryForm />
 
       <h2 className="font-display text-xl font-bold text-ink">Email</h2>
       <p>
@@ -56,5 +63,78 @@ function Contact() {
         match in the app are the tools we offer for that.
       </p>
     </article>
+  )
+}
+
+function EnquiryForm() {
+  const { user } = Route.useRouteContext()
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [error, setError] = useState<string | null>(null)
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    setStatus('sending')
+    setError(null)
+    try {
+      await submitEnquiry({
+        data: {
+          name: String(fd.get('name') ?? ''),
+          email: String(fd.get('email') ?? ''),
+          subject: String(fd.get('subject') ?? ''),
+          message: String(fd.get('message') ?? ''),
+        },
+      })
+      setStatus('sent')
+    } catch (err) {
+      setError(readError(err).message)
+      setStatus('idle')
+    }
+  }
+
+  if (status === 'sent')
+    return (
+      <div className="card flex items-start gap-3 p-5 not-prose">
+        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-brand-700" />
+        <div>
+          <p className="font-bold text-ink">Message sent</p>
+          <p className="mt-1 text-sm text-slate-600">We reply within 2 business days, to the email address you gave.</p>
+        </div>
+      </div>
+    )
+
+  return (
+    <form onSubmit={onSubmit} className="card space-y-3 p-5">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label className="label" htmlFor="name">
+            Your name
+          </label>
+          <input id="name" name="name" required maxLength={100} defaultValue={user?.name ?? ''} className="input" autoComplete="name" />
+        </div>
+        <div>
+          <label className="label" htmlFor="email">
+            Email
+          </label>
+          <input id="email" name="email" type="email" required maxLength={200} defaultValue={user?.email ?? ''} className="input" autoComplete="email" />
+        </div>
+      </div>
+      <div>
+        <label className="label" htmlFor="subject">
+          Subject
+        </label>
+        <input id="subject" name="subject" required maxLength={150} placeholder="Refund for a duplicate payment" className="input" />
+      </div>
+      <div>
+        <label className="label" htmlFor="message">
+          How can we help?
+        </label>
+        <textarea id="message" name="message" required rows={5} maxLength={4000} className="input resize-y" />
+      </div>
+      <ErrorNote message={error} />
+      <button className="btn-primary" disabled={status === 'sending'}>
+        {status === 'sending' ? <Spinner /> : <Send className="h-4 w-4" />} Send message
+      </button>
+    </form>
   )
 }

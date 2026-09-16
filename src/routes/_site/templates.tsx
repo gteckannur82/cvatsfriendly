@@ -41,7 +41,7 @@ function Templates() {
           ))}
         </div>
         <div className="mt-16">
-          <Link to="/signup" className="btn-primary px-6 py-3 text-base">
+          <Link to="/build" className="btn-primary px-6 py-3 text-base">
             Build my resume
           </Link>
         </div>

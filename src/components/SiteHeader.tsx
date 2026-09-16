@@ -35,7 +35,7 @@ export function SiteHeader() {
               <Link to="/login" className={navLink}>
                 Log in
               </Link>
-              <Link to="/signup" className="btn-primary">
+              <Link to="/build" className="btn-primary">
                 Build my resume
               </Link>
             </>
@@ -68,7 +68,7 @@ export function SiteHeader() {
                 <Link to="/login" className="btn-outline py-3" onClick={() => setOpen(false)}>
                   Log in
                 </Link>
-                <Link to="/signup" className="btn-primary py-3" onClick={() => setOpen(false)}>
+                <Link to="/build" className="btn-primary py-3" onClick={() => setOpen(false)}>
                   Build my resume
                 </Link>
               </div>

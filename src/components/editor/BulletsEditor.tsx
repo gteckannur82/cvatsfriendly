@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { aiImproveRole, aiRewriteBullet } from '~/functions/ai.fn'
 import { readError } from '~/lib/errors'
 import { ErrorNote, Spinner } from '../ui'
+import { useAccountGate } from './gate'
 
 interface Props {
   bullets: string[]
@@ -19,6 +20,7 @@ export function BulletsEditor({ bullets, onChange, position, company, jobDescrip
   const [improved, setImproved] = useState<string[] | null>(null)
   const [loading, setLoading] = useState<number | 'all' | null>(null)
   const [error, setError] = useState<{ message: string; upgrade: boolean } | null>(null)
+  const allowAi = useAccountGate()
 
   const set = (i: number, v: string) => onChange(bullets.map((b, j) => (j === i ? v : b)))
   const remove = (i: number) => onChange(bullets.filter((_, j) => j !== i))
@@ -26,6 +28,7 @@ export function BulletsEditor({ bullets, onChange, position, company, jobDescrip
 
   async function rewrite(i: number) {
     if (bullets[i].trim().length < 3) return setError({ message: 'Write a rough version first — AI will polish it.', upgrade: false })
+    if (!allowAi()) return
     setLoading(i)
     setError(null)
     setImproved(null)
@@ -41,6 +44,7 @@ export function BulletsEditor({ bullets, onChange, position, company, jobDescrip
 
   async function improveAll() {
     if (!nonEmpty.length) return setError({ message: 'Add at least one bullet first.', upgrade: false })
+    if (!allowAi()) return
     setLoading('all')
     setError(null)
     setVariants(null)

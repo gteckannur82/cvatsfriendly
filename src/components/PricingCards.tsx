@@ -15,7 +15,7 @@ export function PricingCards({ proAction, headingLevel = 3 }: { proAction?: Reac
           period="forever"
           features={PLAN_FEATURES.free}
           action={
-            <Link to="/signup" className="btn-outline w-full py-3">
+            <Link to="/build" className="btn-outline w-full py-3">
               Build my resume
             </Link>
           }

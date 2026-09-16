@@ -1,6 +1,8 @@
 import { env as cfEnv } from 'cloudflare:workers'
 
 export interface Secrets {
+  /** Comma-separated email allowlist for the admin dashboard. */
+  ADMIN_EMAILS?: string
   CASHFREE_APP_ID?: string
   CASHFREE_SECRET_KEY?: string
   /** 'production' hits api.cashfree.com; anything else stays on the sandbox. */
