@@ -6,7 +6,9 @@ Production source for **[cvatsfriendly.com](https://cvatsfriendly.com)**: a lean
 - **AI.** Rewrite a bullet (3 alternatives), improve every bullet in a role, write a summary, and tailor a whole resume to a pasted job description. The AI is told never to invent facts.
 - **ATS tools.** 10-point content check and job-description keyword match score.
 - **Export & versions.** Text-based PDF (Letter/A4) generated in the browser, RenderCV-compatible YAML and JSON export/import, named version snapshots, and tailored copies.
-- **Accounts & billing.** Email/password auth with HttpOnly sessions, plus a Free/Pro plan. Pro is a one-time ₹499 payment for 30 days, collected with Cashfree Payment Links.
+- **Build before signing up.** `/build` runs the whole editor for logged-out visitors, keeping the draft in `localStorage`; signing up claims it into the account. AI, exports and the ATS check prompt for a free account.
+- **Accounts & billing.** Email/password auth with HttpOnly sessions, plus a Free/Pro plan. Pro is a one-time ₹499 payment for 30 days, collected with Cashfree Payment Links. Discount codes are applied at checkout.
+- **Admin dashboard.** `/admin` covers revenue, users (including comping a Pro period), discount codes and the support inbox.
 - **Marketing site.** Landing page, pricing, templates gallery, ATS guide, privacy and terms pages, sitemap, robots.txt and JSON-LD structured data.
 
 **Stack:** TanStack Start (React 19, SSR, server functions) · Cloudflare Workers · D1 (SQLite) · Workers AI, Groq or Claude · Cashfree Payments · Tailwind CSS v4 · `@react-pdf/renderer`.
@@ -64,6 +66,7 @@ To use **real** AI locally, choose one:
 
 | Secret | Required | Purpose |
 | --- | --- | --- |
+| `ADMIN_EMAILS` | For `/admin` | Comma-separated emails that get the admin dashboard. An allowlist, so no database row can grant admin |
 | `CASHFREE_APP_ID` | For billing | App ID from Cashfree → Developers → API Keys. Without it the upgrade button is disabled |
 | `CASHFREE_SECRET_KEY` | For billing | Matching secret key. Also the key used to verify webhook signatures |
 | `CASHFREE_ENV` | No | `production` hits `api.cashfree.com`; anything else stays on the sandbox |
@@ -100,6 +103,13 @@ upgrade is a plain redirect with no client SDK to load.
 
 > Cashfree requires a customer phone number on every payment link, so the billing page asks for
 > one before redirecting and stores it on the user row for next time.
+
+### Discount codes
+
+Admins create codes at `/admin/offers` as either a percentage or a flat rupee amount, with an
+optional expiry and redemption cap. `applyOffer` in `src/server/offers.ts` validates a code and
+computes the charge; a redemption is only counted once the payment is **confirmed**, so an
+abandoned checkout never burns one. A 100%-off code still charges ₹1, the minimum Cashfree accepts.
 
 ### Domain whitelisting
 
