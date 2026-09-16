@@ -1,5 +1,5 @@
 import { deleteCookie, getCookie, getRequest, setCookie } from '@tanstack/react-start/server'
-import { db } from './env'
+import { db, env } from './env'
 import { randomToken, sha256Hex } from './crypto'
 
 export const SESSION_COOKIE = 'cvaf_session'
@@ -11,8 +11,7 @@ export interface UserRow {
   name: string
   password_hash: string
   plan: string
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
+  phone: string | null
   subscription_status: string | null
   current_period_end: number | null
   created_at: number
@@ -22,10 +21,11 @@ export interface PublicUser {
   id: string
   email: string
   name: string
+  phone: string | null
   plan: 'free' | 'pro'
   subscriptionStatus: string | null
   currentPeriodEnd: number | null
-  hasBillingAccount: boolean
+  isAdmin: boolean
 }
 
 export function toPublicUser(u: UserRow): PublicUser {
@@ -33,11 +33,21 @@ export function toPublicUser(u: UserRow): PublicUser {
     id: u.id,
     email: u.email,
     name: u.name,
+    phone: u.phone,
     plan: u.plan === 'pro' ? 'pro' : 'free',
     subscriptionStatus: u.subscription_status,
     currentPeriodEnd: u.current_period_end,
-    hasBillingAccount: !!u.stripe_customer_id,
+    isAdmin: isAdminEmail(u.email),
   }
+}
+
+/** Admin rights come from the ADMIN_EMAILS allowlist, so no database row can grant them. */
+export function isAdminEmail(email: string) {
+  return (env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(email.toLowerCase())
 }
 
 const isSecure = () => {
@@ -80,7 +90,14 @@ export async function getSessionUser(): Promise<UserRow | null> {
     .bind(await sha256Hex(token))
     .first<UserRow & { session_expires: number }>()
   if (!row || row.session_expires < Date.now()) return null
-  return row
+  return expireLapsedPro(row)
+}
+
+/** One-time payments don't renew, so a lapsed Pro period downgrades on the next read. */
+async function expireLapsedPro(row: UserRow): Promise<UserRow> {
+  if (row.plan !== 'pro' || !row.current_period_end || row.current_period_end * 1000 > Date.now()) return row
+  await db().prepare(`UPDATE users SET plan = 'free', subscription_status = 'expired' WHERE id = ?`).bind(row.id).run()
+  return { ...row, plan: 'free', subscription_status: 'expired' }
 }
 
 export class HttpError extends Error {
@@ -96,5 +113,11 @@ export class HttpError extends Error {
 export async function requireUser(): Promise<UserRow> {
   const user = await getSessionUser()
   if (!user) throw new HttpError(401, 'Please log in to continue.', 'UNAUTHORIZED')
+  return user
+}
+
+export async function requireAdmin(): Promise<UserRow> {
+  const user = await requireUser()
+  if (!isAdminEmail(user.email)) throw new HttpError(403, 'Admin access required.', 'FORBIDDEN')
   return user
 }

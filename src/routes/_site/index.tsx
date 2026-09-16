@@ -100,7 +100,7 @@ function Landing() {
             Paste the posting. See what’s <Swipe kind="missing" announce={false}>missing</Swipe>. Add only what’s true.
           </h2>
           <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Link to="/signup" className="btn-primary px-6 py-3.5 text-base">
+            <Link to="/build" className="btn-primary px-6 py-3.5 text-base">
               Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <p className="text-ink-soft">Free plan. No credit card.</p>
@@ -132,7 +132,7 @@ function Hero({ sample }: { sample: ResumeData }) {
             to each posting, and export a PDF the ATS can read.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
-            <Link to="/signup" className="btn-primary px-6 py-3.5 text-base">
+            <Link to="/build" className="btn-primary px-6 py-3.5 text-base">
               Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <Link to="/templates" className="inline-flex min-h-11 items-center font-bold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
@@ -371,7 +371,7 @@ function RewriteSection() {
             to your own words.
           </p>
           <p className="mt-5 text-lg leading-relaxed text-ink-soft">You pick which suggestion to keep. Nothing changes until you do.</p>
-          <Link to="/signup" className="btn-primary mt-8 px-6 py-3.5 text-base">
+          <Link to="/build" className="btn-primary mt-8 px-6 py-3.5 text-base">
             Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
@@ -542,7 +542,7 @@ function TemplatesSection({ sample }: { sample: ResumeData }) {
                 )
               })}
             </div>
-            <Link to="/signup" className="btn-primary mt-8 hidden px-6 py-3.5 text-base lg:inline-flex">
+            <Link to="/build" className="btn-primary mt-8 hidden px-6 py-3.5 text-base lg:inline-flex">
               Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
@@ -558,7 +558,7 @@ function TemplatesSection({ sample }: { sample: ResumeData }) {
                 Compare all templates
               </Link>
             </p>
-            <Link to="/signup" className="btn-primary mt-6 w-full px-6 py-3.5 text-base lg:hidden">
+            <Link to="/build" className="btn-primary mt-6 w-full px-6 py-3.5 text-base lg:hidden">
               Build my resume <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>

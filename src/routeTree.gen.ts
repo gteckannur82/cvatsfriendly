@@ -10,28 +10,47 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SiteRouteImport } from './routes/_site'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as BuildRouteImport } from './routes/build'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SiteAtsResumeGuideRouteImport } from './routes/_site/ats-resume-guide'
+import { Route as SiteContactRouteImport } from './routes/_site/contact'
 import { Route as SiteLoginRouteImport } from './routes/_site/login'
 import { Route as SitePricingRouteImport } from './routes/_site/pricing'
 import { Route as SitePrivacyRouteImport } from './routes/_site/privacy'
+import { Route as SiteRefundPolicyRouteImport } from './routes/_site/refund-policy'
+import { Route as SiteShippingRouteImport } from './routes/_site/shipping'
 import { Route as SiteSignupRouteImport } from './routes/_site/signup'
 import { Route as SiteTemplatesRouteImport } from './routes/_site/templates'
 import { Route as SiteTermsRouteImport } from './routes/_site/terms'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminOffersRouteImport } from './routes/admin/offers'
+import { Route as AdminSupportRouteImport } from './routes/admin/support'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as AppBillingRouteImport } from './routes/app/billing'
-import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe/webhook'
+import { Route as ApiCashfreeWebhookRouteImport } from './routes/api/cashfree/webhook'
 import { Route as AppResumeIdRouteImport } from './routes/app/resume.$id'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildRoute = BuildRouteImport.update({
+  id: '/build',
+  path: '/build',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -49,6 +68,11 @@ const SiteAtsResumeGuideRoute = SiteAtsResumeGuideRouteImport.update({
   path: '/ats-resume-guide',
   getParentRoute: () => SiteRoute,
 } as any)
+const SiteContactRoute = SiteContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => SiteRoute,
+} as any)
 const SiteLoginRoute = SiteLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -62,6 +86,16 @@ const SitePricingRoute = SitePricingRouteImport.update({
 const SitePrivacyRoute = SitePrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => SiteRoute,
+} as any)
+const SiteRefundPolicyRoute = SiteRefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => SiteRoute,
+} as any)
+const SiteShippingRoute = SiteShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
   getParentRoute: () => SiteRoute,
 } as any)
 const SiteSignupRoute = SiteSignupRouteImport.update({
@@ -79,6 +113,26 @@ const SiteTermsRoute = SiteTermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => SiteRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOffersRoute = AdminOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -89,9 +143,9 @@ const AppBillingRoute = AppBillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
-  id: '/api/stripe/webhook',
-  path: '/api/stripe/webhook',
+const ApiCashfreeWebhookRoute = ApiCashfreeWebhookRouteImport.update({
+  id: '/api/cashfree/webhook',
+  path: '/api/cashfree/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppResumeIdRoute = AppResumeIdRouteImport.update({
@@ -102,109 +156,163 @@ const AppResumeIdRoute = AppResumeIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof SiteIndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/build': typeof BuildRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ats-resume-guide': typeof SiteAtsResumeGuideRoute
+  '/contact': typeof SiteContactRoute
   '/login': typeof SiteLoginRoute
   '/pricing': typeof SitePricingRoute
   '/privacy': typeof SitePrivacyRoute
+  '/refund-policy': typeof SiteRefundPolicyRoute
+  '/shipping': typeof SiteShippingRoute
   '/signup': typeof SiteSignupRoute
   '/templates': typeof SiteTemplatesRoute
   '/terms': typeof SiteTermsRoute
+  '/admin/offers': typeof AdminOffersRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
   '/app/billing': typeof AppBillingRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
-  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/api/cashfree/webhook': typeof ApiCashfreeWebhookRoute
   '/app/resume/$id': typeof AppResumeIdRoute
 }
 export interface FileRoutesByTo {
+  '/build': typeof BuildRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ats-resume-guide': typeof SiteAtsResumeGuideRoute
+  '/contact': typeof SiteContactRoute
   '/login': typeof SiteLoginRoute
   '/pricing': typeof SitePricingRoute
   '/privacy': typeof SitePrivacyRoute
+  '/refund-policy': typeof SiteRefundPolicyRoute
+  '/shipping': typeof SiteShippingRoute
   '/signup': typeof SiteSignupRoute
   '/templates': typeof SiteTemplatesRoute
   '/terms': typeof SiteTermsRoute
+  '/admin/offers': typeof AdminOffersRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
   '/app/billing': typeof AppBillingRoute
   '/': typeof SiteIndexRoute
+  '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
-  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/api/cashfree/webhook': typeof ApiCashfreeWebhookRoute
   '/app/resume/$id': typeof AppResumeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_site': typeof SiteRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
+  '/build': typeof BuildRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_site/ats-resume-guide': typeof SiteAtsResumeGuideRoute
+  '/_site/contact': typeof SiteContactRoute
   '/_site/login': typeof SiteLoginRoute
   '/_site/pricing': typeof SitePricingRoute
   '/_site/privacy': typeof SitePrivacyRoute
+  '/_site/refund-policy': typeof SiteRefundPolicyRoute
+  '/_site/shipping': typeof SiteShippingRoute
   '/_site/signup': typeof SiteSignupRoute
   '/_site/templates': typeof SiteTemplatesRoute
   '/_site/terms': typeof SiteTermsRoute
+  '/admin/offers': typeof AdminOffersRoute
+  '/admin/support': typeof AdminSupportRoute
+  '/admin/users': typeof AdminUsersRoute
   '/app/billing': typeof AppBillingRoute
   '/_site/': typeof SiteIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
-  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/api/cashfree/webhook': typeof ApiCashfreeWebhookRoute
   '/app/resume/$id': typeof AppResumeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/app'
+    | '/build'
     | '/sitemap.xml'
     | '/ats-resume-guide'
+    | '/contact'
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/refund-policy'
+    | '/shipping'
     | '/signup'
     | '/templates'
     | '/terms'
+    | '/admin/offers'
+    | '/admin/support'
+    | '/admin/users'
     | '/app/billing'
+    | '/admin/'
     | '/app/'
-    | '/api/stripe/webhook'
+    | '/api/cashfree/webhook'
     | '/app/resume/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/build'
     | '/sitemap.xml'
     | '/ats-resume-guide'
+    | '/contact'
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/refund-policy'
+    | '/shipping'
     | '/signup'
     | '/templates'
     | '/terms'
+    | '/admin/offers'
+    | '/admin/support'
+    | '/admin/users'
     | '/app/billing'
     | '/'
+    | '/admin'
     | '/app'
-    | '/api/stripe/webhook'
+    | '/api/cashfree/webhook'
     | '/app/resume/$id'
   id:
     | '__root__'
     | '/_site'
+    | '/admin'
     | '/app'
+    | '/build'
     | '/sitemap.xml'
     | '/_site/ats-resume-guide'
+    | '/_site/contact'
     | '/_site/login'
     | '/_site/pricing'
     | '/_site/privacy'
+    | '/_site/refund-policy'
+    | '/_site/shipping'
     | '/_site/signup'
     | '/_site/templates'
     | '/_site/terms'
+    | '/admin/offers'
+    | '/admin/support'
+    | '/admin/users'
     | '/app/billing'
     | '/_site/'
+    | '/admin/'
     | '/app/'
-    | '/api/stripe/webhook'
+    | '/api/cashfree/webhook'
     | '/app/resume/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   SiteRoute: typeof SiteRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
+  BuildRoute: typeof BuildRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
+  ApiCashfreeWebhookRoute: typeof ApiCashfreeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -216,11 +324,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/build': {
+      id: '/build'
+      path: '/build'
+      fullPath: '/build'
+      preLoaderRoute: typeof BuildRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -244,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteAtsResumeGuideRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_site/contact': {
+      id: '/_site/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof SiteContactRouteImport
+      parentRoute: typeof SiteRoute
+    }
     '/_site/login': {
       id: '/_site/login'
       path: '/login'
@@ -263,6 +392,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof SitePrivacyRouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/refund-policy': {
+      id: '/_site/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof SiteRefundPolicyRouteImport
+      parentRoute: typeof SiteRoute
+    }
+    '/_site/shipping': {
+      id: '/_site/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof SiteShippingRouteImport
       parentRoute: typeof SiteRoute
     }
     '/_site/signup': {
@@ -286,6 +429,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteTermsRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/offers': {
+      id: '/admin/offers'
+      path: '/offers'
+      fullPath: '/admin/offers'
+      preLoaderRoute: typeof AdminOffersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/app/': {
       id: '/app/'
       path: '/'
@@ -300,11 +471,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBillingRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/stripe/webhook': {
-      id: '/api/stripe/webhook'
-      path: '/api/stripe/webhook'
-      fullPath: '/api/stripe/webhook'
-      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+    '/api/cashfree/webhook': {
+      id: '/api/cashfree/webhook'
+      path: '/api/cashfree/webhook'
+      fullPath: '/api/cashfree/webhook'
+      preLoaderRoute: typeof ApiCashfreeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/resume/$id': {
@@ -319,9 +490,12 @@ declare module '@tanstack/react-router' {
 
 interface SiteRouteChildren {
   SiteAtsResumeGuideRoute: typeof SiteAtsResumeGuideRoute
+  SiteContactRoute: typeof SiteContactRoute
   SiteLoginRoute: typeof SiteLoginRoute
   SitePricingRoute: typeof SitePricingRoute
   SitePrivacyRoute: typeof SitePrivacyRoute
+  SiteRefundPolicyRoute: typeof SiteRefundPolicyRoute
+  SiteShippingRoute: typeof SiteShippingRoute
   SiteSignupRoute: typeof SiteSignupRoute
   SiteTemplatesRoute: typeof SiteTemplatesRoute
   SiteTermsRoute: typeof SiteTermsRoute
@@ -330,9 +504,12 @@ interface SiteRouteChildren {
 
 const SiteRouteChildren: SiteRouteChildren = {
   SiteAtsResumeGuideRoute: SiteAtsResumeGuideRoute,
+  SiteContactRoute: SiteContactRoute,
   SiteLoginRoute: SiteLoginRoute,
   SitePricingRoute: SitePricingRoute,
   SitePrivacyRoute: SitePrivacyRoute,
+  SiteRefundPolicyRoute: SiteRefundPolicyRoute,
+  SiteShippingRoute: SiteShippingRoute,
   SiteSignupRoute: SiteSignupRoute,
   SiteTemplatesRoute: SiteTemplatesRoute,
   SiteTermsRoute: SiteTermsRoute,
@@ -340,6 +517,22 @@ const SiteRouteChildren: SiteRouteChildren = {
 }
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
+
+interface AdminRouteChildren {
+  AdminOffersRoute: typeof AdminOffersRoute
+  AdminSupportRoute: typeof AdminSupportRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminOffersRoute: AdminOffersRoute,
+  AdminSupportRoute: AdminSupportRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppBillingRoute: typeof AppBillingRoute
@@ -357,9 +550,11 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   SiteRoute: SiteRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
+  BuildRoute: BuildRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
+  ApiCashfreeWebhookRoute: ApiCashfreeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

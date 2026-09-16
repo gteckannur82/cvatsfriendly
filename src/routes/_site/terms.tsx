@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import { PRO_PRICE_DISPLAY } from '~/lib/plans'
 import { SITE, seo } from '~/lib/site'
 
 export const Route = createFileRoute('/_site/terms')({
@@ -18,13 +19,20 @@ function Terms() {
         You own your resume content and are responsible for its accuracy. AI suggestions may contain errors; review every change before using it in an
         application.
       </p>
-      <h2 className="font-display text-xl font-bold text-ink">Subscriptions</h2>
+      <h2 className="font-display text-xl font-bold text-ink">Payments</h2>
       <p>
-        Pro renews monthly until cancelled. You can cancel anytime from the billing page; access continues until the end of the paid period. Fees are
-        non-refundable except where required by law.
+        Pro costs {PRO_PRICE_DISPLAY} for 30 days. It is a one-time payment: nothing auto-renews and no payment instrument is stored or charged again by us.
+        When the 30 days end your account returns to the Free plan and your saved resumes remain accessible. Payments are collected in Indian Rupees by
+        Cashfree Payments; refunds are handled under our{' '}
+        <Link to="/refund-policy" className="text-brand-700 underline">
+          Refund &amp; Cancellation Policy
+        </Link>
+        .
       </p>
       <h2 className="font-display text-xl font-bold text-ink">Acceptable use</h2>
       <p>Don’t misuse the service, attempt to circumvent usage limits, or use it to create fraudulent documents.</p>
+      <h2 className="font-display text-xl font-bold text-ink">Governing law</h2>
+      <p>These terms are governed by the laws of India, and the courts of India have exclusive jurisdiction over any dispute arising from them.</p>
       <h2 className="font-display text-xl font-bold text-ink">Contact</h2>
       <p>
         <a className="text-brand-700 underline" href={`mailto:${SITE.supportEmail}`}>

@@ -105,7 +105,7 @@ function Guide() {
         <div className="mt-16 bg-desk p-8 sm:p-10">
           <h2 className="font-display text-3xl font-extrabold tracking-[-0.03em] text-ink">Skip the formatting work</h2>
           <p className="mt-2 text-lg text-ink-soft">Every CV ATS Friendly template follows these rules, and the built-in ATS check flags what to fix.</p>
-          <Link to="/signup" className="btn-primary mt-6 px-6 py-3">
+          <Link to="/build" className="btn-primary mt-6 px-6 py-3">
             Build my resume
           </Link>
         </div>

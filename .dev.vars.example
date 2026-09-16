@@ -1,17 +1,26 @@
 # Copy to .dev.vars for local development (never commit .dev.vars)
 
-# --- Stripe (test mode) ---
-STRIPE_SECRET_KEY=sk_test_xxx
-# From `stripe listen --forward-to localhost:3000/api/stripe/webhook` (optional locally)
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-# Optional: an existing recurring Price ID. If empty, a $9/month price is created inline at checkout.
-STRIPE_PRICE_ID=
+# --- Admin ---
+# Comma-separated emails that get the /admin dashboard.
+ADMIN_EMAILS=
+
+# --- Cashfree Payments (sandbox) ---
+# From the Cashfree merchant dashboard → Developers → API Keys.
+CASHFREE_APP_ID=
+CASHFREE_SECRET_KEY=
+# 'production' hits api.cashfree.com; anything else stays on the sandbox.
+CASHFREE_ENV=sandbox
 
 # --- AI ---
-# Optional: when set, Claude is used for AI features; otherwise Workers AI (free tier) is used.
+# Optional: when set, Claude is used for AI features; otherwise Groq, then Workers AI (free tier).
 ANTHROPIC_API_KEY=
 # Optional model override (default claude-opus-5)
 ANTHROPIC_MODEL=
+
+# Optional: used when ANTHROPIC_API_KEY is not set.
+GROQ_API_KEY=
+# Optional model override (default openai/gpt-oss-120b)
+GROQ_MODEL=
 
 # Optional: return canned AI responses for offline UI development
 AI_MOCK=false

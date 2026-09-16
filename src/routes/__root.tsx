@@ -20,8 +20,8 @@ const jsonLd = {
   operatingSystem: 'Web',
   description: SITE.description,
   offers: [
-    { '@type': 'Offer', price: '0', priceCurrency: 'USD', name: 'Free' },
-    { '@type': 'Offer', price: '9', priceCurrency: 'USD', name: 'Pro (monthly)' },
+    { '@type': 'Offer', price: '0', priceCurrency: 'INR', name: 'Free' },
+    { '@type': 'Offer', price: '499', priceCurrency: 'INR', name: 'Pro (30 days)' },
   ],
 }
 
