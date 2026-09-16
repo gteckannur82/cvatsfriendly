@@ -11,7 +11,7 @@ export function PricingCards({ proAction, headingLevel = 3 }: { proAction?: Reac
           name="Free"
           headingLevel={headingLevel}
           blurb="Everything you need for one strong resume."
-          price="$0"
+          price="₹0"
           period="forever"
           features={PLAN_FEATURES.free}
           action={
@@ -25,7 +25,7 @@ export function PricingCards({ proAction, headingLevel = 3 }: { proAction?: Reac
           headingLevel={headingLevel}
           blurb="For an active search with many applications."
           price={PRO_PRICE_DISPLAY}
-          period="per month"
+          period="for 30 days"
           features={PLAN_FEATURES.pro}
           markDifferences
           action={

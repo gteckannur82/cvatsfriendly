@@ -40,9 +40,10 @@ export async function sha256Hex(input: string) {
   return toHex(await crypto.subtle.digest('SHA-256', enc.encode(input)))
 }
 
-export async function hmacSha256Hex(secret: string, payload: string) {
+export async function hmacSha256Base64(secret: string, payload: string) {
   const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
-  return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(payload)))
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(payload))
+  return btoa(String.fromCharCode(...new Uint8Array(sig)))
 }
 
 export const newId = () => crypto.randomUUID()

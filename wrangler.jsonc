@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "cvatsfriendly-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "992f6c2d-33d4-46db-9c4a-2c4333f1cd89",
       "migrations_dir": "migrations"
     }
   ],
@@ -22,13 +22,15 @@
   "vars": {
     "APP_NAME": "CV ATS Friendly",
     "SITE_URL": "https://cvatsfriendly.com",
-    "PRO_PRICE_CENTS": "900",
+    "PRO_PRICE_PAISE": "49900",
     "WORKERS_AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
-  }
+  },
 
-  // Uncomment once cvatsfriendly.com is an active zone in your Cloudflare account:
-  // ,"routes": [
-  //   { "pattern": "cvatsfriendly.com", "custom_domain": true },
-  //   { "pattern": "www.cvatsfriendly.com", "custom_domain": true }
-  // ]
+  // cvatsfriendly.com is canonical. www and beta resolve here too, but a zone
+  // redirect rule sends them to the apex, so only one host ever serves pages.
+  "routes": [
+    { "pattern": "cvatsfriendly.com", "custom_domain": true },
+    { "pattern": "www.cvatsfriendly.com", "custom_domain": true },
+    { "pattern": "beta.cvatsfriendly.com", "custom_domain": true }
+  ]
 }

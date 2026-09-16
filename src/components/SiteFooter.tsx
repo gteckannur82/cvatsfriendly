@@ -20,11 +20,13 @@ export function SiteFooter() {
         </FooterColumn>
         <FooterColumn title="Resources">
           <Link to="/ats-resume-guide" className={link}>What is an ATS-friendly resume?</Link>
-          <a href={`mailto:${SITE.supportEmail}`} className={link}>Contact support</a>
+          <Link to="/contact" className={link}>Contact us</Link>
         </FooterColumn>
         <FooterColumn title="Legal">
           <Link to="/privacy" className={link}>Privacy policy</Link>
           <Link to="/terms" className={link}>Terms of service</Link>
+          <Link to="/refund-policy" className={link}>Refund &amp; cancellation</Link>
+          <Link to="/shipping" className={link}>Delivery policy</Link>
         </FooterColumn>
       </div>
       <div className="container-page border-t border-desk-rule py-5 text-[13px] text-ink-soft">

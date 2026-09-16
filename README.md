@@ -6,10 +6,10 @@ Production source for **[cvatsfriendly.com](https://cvatsfriendly.com)**: a lean
 - **AI.** Rewrite a bullet (3 alternatives), improve every bullet in a role, write a summary, and tailor a whole resume to a pasted job description. The AI is told never to invent facts.
 - **ATS tools.** 10-point content check and job-description keyword match score.
 - **Export & versions.** Text-based PDF (Letter/A4) generated in the browser, RenderCV-compatible YAML and JSON export/import, named version snapshots, and tailored copies.
-- **Accounts & billing.** Email/password auth with HttpOnly sessions, plus a Free/Pro plan with Stripe Checkout, the Customer Portal and webhooks.
+- **Accounts & billing.** Email/password auth with HttpOnly sessions, plus a Free/Pro plan. Pro is a one-time ₹499 payment for 30 days, collected with Cashfree Payment Links.
 - **Marketing site.** Landing page, pricing, templates gallery, ATS guide, privacy and terms pages, sitemap, robots.txt and JSON-LD structured data.
 
-**Stack:** TanStack Start (React 19, SSR, server functions) · Cloudflare Workers · D1 (SQLite) · Workers AI, Groq or Claude · Stripe · Tailwind CSS v4 · `@react-pdf/renderer`.
+**Stack:** TanStack Start (React 19, SSR, server functions) · Cloudflare Workers · D1 (SQLite) · Workers AI, Groq or Claude · Cashfree Payments · Tailwind CSS v4 · `@react-pdf/renderer`.
 Everything runs on the **Cloudflare Workers free tier**.
 
 ---
@@ -55,18 +55,18 @@ To use **real** AI locally, choose one:
 
 | Var | Default | Purpose |
 | --- | --- | --- |
-| `APP_NAME` | `CV ATS Friendly` | Product name used for the Stripe product |
+| `APP_NAME` | `CV ATS Friendly` | Product name, used in the payment link description |
 | `SITE_URL` | `https://cvatsfriendly.com` | Canonical site URL |
-| `PRO_PRICE_CENTS` | `900` | Pro monthly price when `STRIPE_PRICE_ID` is not set |
+| `PRO_PRICE_PAISE` | `49900` | Price of one 30-day Pro period, in paise (₹499) |
 | `WORKERS_AI_MODEL` | `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | Model for the Workers AI fallback |
 
 **Secrets** go in `.dev.vars` locally and are set with `wrangler secret put NAME` in production.
 
 | Secret | Required | Purpose |
 | --- | --- | --- |
-| `STRIPE_SECRET_KEY` | For billing | `sk_test_…` (test mode) or `sk_live_…` |
-| `STRIPE_WEBHOOK_SECRET` | For billing | `whsec_…` signing secret of your webhook endpoint |
-| `STRIPE_PRICE_ID` | No | Existing recurring price. If empty, a $9/mo price is created inline at checkout |
+| `CASHFREE_APP_ID` | For billing | App ID from Cashfree → Developers → API Keys. Without it the upgrade button is disabled |
+| `CASHFREE_SECRET_KEY` | For billing | Matching secret key. Also the key used to verify webhook signatures |
+| `CASHFREE_ENV` | No | `production` hits `api.cashfree.com`; anything else stays on the sandbox |
 | `ANTHROPIC_API_KEY` | No | When set, AI uses Claude; otherwise Groq (if set), otherwise Workers AI |
 | `ANTHROPIC_MODEL` | No | Overrides the Claude model (default `claude-opus-5`). For example, `claude-haiku-4-5` is much cheaper per call |
 | `GROQ_API_KEY` | No | When set (and `ANTHROPIC_API_KEY` is not), AI uses Groq |
@@ -77,19 +77,36 @@ To use **real** AI locally, choose one:
 
 ---
 
-## 3. Stripe (test mode)
+## 3. Cashfree Payments (sandbox)
 
-1. Create a Stripe account and switch to **Test mode**. Copy the secret key into `STRIPE_SECRET_KEY`.
-2. **Local testing:** checkout works without webhooks. When the user returns to `/app/billing?session_id=…`, the app confirms the session with Stripe directly and upgrades the account. To test webhooks (renewals and cancellations) as well:
-   ```bash
-   stripe listen --forward-to localhost:3000/api/stripe/webhook
-   ```
-   Put the printed `whsec_…` into `.dev.vars`.
-3. Pay with test card `4242 4242 4242 4242`, any future date, and any CVC.
-4. **Production webhook:** Dashboard → Developers → Webhooks → add the endpoint `https://cvatsfriendly.com/api/stripe/webhook` with these events:
-   `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`.
-5. **Customer Portal:** in test mode, open Settings → Billing → Customer portal once and click **Save**. This enables the “Manage subscription” button.
-6. To charge real money, swap in live keys and a live webhook secret. No code changes are needed.
+Pro is a **one-time payment**, not a subscription: one payment unlocks Pro for 30 days
+(`PRO_PERIOD_DAYS` in `src/server/cashfree.ts`), nothing auto-renews, and a lapsed period
+downgrades the account on the next request. Checkout is a Cashfree **Payment Link**, so the
+upgrade is a plain redirect with no client SDK to load.
+
+1. Create a Cashfree merchant account. In the dashboard, go to **Developers → API Keys** and
+   copy the App ID and Secret Key into `CASHFREE_APP_ID` / `CASHFREE_SECRET_KEY`. Leave
+   `CASHFREE_ENV=sandbox` until you are ready to take real money.
+2. **Local testing:** the upgrade works without webhooks. When the user returns to
+   `/app/billing?link_id=…`, the app fetches the link from Cashfree and grants Pro only if
+   `link_status` is `PAID`.
+3. **Production webhook:** Dashboard → Developers → Webhooks → add
+   `https://cvatsfriendly.com/api/cashfree/webhook` and subscribe to the payment success event.
+   The handler verifies `x-webhook-signature` (base64 HMAC-SHA256 of
+   `x-webhook-timestamp` + raw body, keyed with the secret) and then re-fetches the link from
+   Cashfree before granting anything — the webhook is only a trigger, never the source of truth.
+   Granting is idempotent, so the webhook and the return URL can both fire in any order.
+4. To charge real money, set `CASHFREE_ENV=production` and swap in production keys. No code changes are needed.
+
+> Cashfree requires a customer phone number on every payment link, so the billing page asks for
+> one before redirecting and stores it on the user row for next time.
+
+### Domain whitelisting
+
+Cashfree reviews the site before activating a merchant account and expects these pages to exist
+and be linked from the footer: `/contact`, `/terms`, `/privacy`, `/refund-policy`, `/shipping`
+and `/pricing`. They are all in `src/routes/_site/`. **Before submitting for review, fill in the
+registered business address and phone number on `/contact`** — they are placeholders right now.
 
 ---
 
@@ -105,9 +122,10 @@ npx wrangler d1 create cvatsfriendly-db
 npm run db:migrate:remote
 
 # 3) Secrets
-npx wrangler secret put STRIPE_SECRET_KEY
-npx wrangler secret put STRIPE_WEBHOOK_SECRET
-npx wrangler secret put ANTHROPIC_API_KEY      # optional; skip to use free Workers AI
+npx wrangler secret put CASHFREE_APP_ID        # optional; without it the upgrade button is disabled
+npx wrangler secret put CASHFREE_SECRET_KEY
+npx wrangler secret put CASHFREE_ENV           # 'production' for real money, else sandbox
+npx wrangler secret put GROQ_API_KEY           # optional; skip to use free Workers AI
 
 # 4) Build & deploy
 npm run deploy
@@ -118,15 +136,13 @@ The first deploy gives you a `https://cvatsfriendly.<your-subdomain>.workers.dev
 ### Connect cvatsfriendly.com
 
 1. Add `cvatsfriendly.com` as a site in Cloudflare (the Free plan is fine) and change the nameservers at your registrar to the two Cloudflare gives you. Wait until the zone shows **Active**.
-2. Uncomment the `routes` block at the bottom of `wrangler.jsonc`:
-   ```jsonc
-   "routes": [
-     { "pattern": "cvatsfriendly.com", "custom_domain": true },
-     { "pattern": "www.cvatsfriendly.com", "custom_domain": true }
-   ]
-   ```
+2. Keep the `routes` block in `wrangler.jsonc` pointed at the hostnames you want to serve.
 3. Run `npm run deploy` again. Cloudflare creates the DNS records and TLS certificates automatically.
-4. Update the Stripe webhook URL to `https://cvatsfriendly.com/api/stripe/webhook`.
+4. Update the Cashfree webhook URL to `https://cvatsfriendly.com/api/cashfree/webhook`.
+
+`cvatsfriendly.com` is canonical. `www.` and `beta.` are custom domains on the same Worker so
+their DNS resolves, but a zone-level redirect rule 301s them to the apex, so only one hostname
+ever serves pages.
 
 ### Deploy from Git (optional)
 
@@ -139,7 +155,7 @@ In Cloudflare Dashboard → Workers & Pages → your Worker → Settings → Bui
 | Resource | Free limit | How the app fits |
 | --- | --- | --- |
 | Workers requests | 100k/day | SSR pages and server functions |
-| Worker CPU | 10 ms/request | Password hashing uses PBKDF2 at 60k iterations. PDFs are rendered in the browser, not the Worker. Waiting on AI/Stripe calls doesn't count as CPU |
+| Worker CPU | 10 ms/request | Password hashing uses PBKDF2 at 60k iterations. PDFs are rendered in the browser, not the Worker. Waiting on AI/Cashfree calls doesn't count as CPU |
 | Worker size | 3 MB gzipped | About 0.5 MB gzipped (react-pdf is excluded from the Worker bundle) |
 | D1 | 5 GB storage, 5M reads/day | Resumes are small JSON rows |
 | Workers AI | 10k neurons/day | Enough for light use (on the order of 100 rewrites/day on the 70B model); use `ANTHROPIC_API_KEY` or a smaller `WORKERS_AI_MODEL` for more |
@@ -153,10 +169,10 @@ migrations/            D1 schema (users, sessions, resumes, resume_versions, ai_
 src/routes/            File-based routes
   _site/               Public pages: landing, pricing, templates, guide, auth, legal
   app/                 Authenticated app: dashboard, editor (resume.$id), billing
-  api/stripe/webhook   Stripe webhook (signature verified with WebCrypto)
+  api/cashfree/webhook Cashfree webhook (signature verified with WebCrypto)
   sitemap[.]xml        Dynamic sitemap
 src/functions/         Server functions (auth, resumes & versions, AI, billing)
-src/server/            Server-only code: D1/env, sessions, crypto, Stripe REST client, AI providers & prompts
+src/server/            Server-only code: D1/env, sessions, crypto, Cashfree REST client, AI providers & prompts
 src/lib/resume/        Resume schema, templates, date formatting, ATS checks, RenderCV YAML import/export
 src/components/        UI, editor steps, HTML preview, PDF document
 ```

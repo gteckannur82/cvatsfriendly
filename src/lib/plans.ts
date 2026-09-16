@@ -14,7 +14,7 @@ export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
   pro: { maxResumes: 50, maxVersionsPerResume: 100, aiPerDay: 150, proTemplates: true },
 }
 
-export const PRO_PRICE_DISPLAY = '$9'
+export const PRO_PRICE_DISPLAY = '₹499'
 
 /** Credits each AI action consumes. Enforced in ai.fn.ts and quoted in marketing copy. */
 export const AI_CREDIT_COST = { rewriteBullet: 1, improveRole: 1, writeSummary: 1, tailorResume: 3 } as const
@@ -39,7 +39,7 @@ export const PLAN_FEATURES = {
     `All ${THEMES.length} templates`,
     `${PRO.aiPerDay} AI credits a day`,
     `${PRO.maxVersionsPerResume} saved versions per resume`,
-    'Cancel anytime',
+    'One payment, 30 days — nothing auto-renews',
   ],
 }
 

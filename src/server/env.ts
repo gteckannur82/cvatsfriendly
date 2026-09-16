@@ -1,9 +1,10 @@
 import { env as cfEnv } from 'cloudflare:workers'
 
 export interface Secrets {
-  STRIPE_SECRET_KEY?: string
-  STRIPE_WEBHOOK_SECRET?: string
-  STRIPE_PRICE_ID?: string
+  CASHFREE_APP_ID?: string
+  CASHFREE_SECRET_KEY?: string
+  /** 'production' hits api.cashfree.com; anything else stays on the sandbox. */
+  CASHFREE_ENV?: string
   ANTHROPIC_API_KEY?: string
   ANTHROPIC_MODEL?: string
   GROQ_API_KEY?: string

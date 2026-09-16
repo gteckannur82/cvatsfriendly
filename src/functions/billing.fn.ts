@@ -1,79 +1,61 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { z } from 'zod'
-import { db, env } from '~/server/env'
+import { db } from '~/server/env'
 import { requireUser, toPublicUser } from '~/server/auth'
-import { applySubscription, stripe, stripeConfigured } from '~/server/stripe'
+import { newId } from '~/server/crypto'
+import { PRO_PERIOD_DAYS, cashfreeConfigured, cashfreeSandbox, createProPaymentLink, proPricePaise, reconcilePayment } from '~/server/cashfree'
 
 const origin = () => new URL(getRequest().url).origin
 
 export const getBillingConfig = createServerFn({ method: 'GET' }).handler(async () => ({
-  enabled: stripeConfigured(),
-  testMode: (env.STRIPE_SECRET_KEY ?? '').startsWith('sk_test_'),
+  enabled: cashfreeConfigured(),
+  sandbox: cashfreeSandbox(),
+  periodDays: PRO_PERIOD_DAYS,
 }))
 
-export const createCheckoutSession = createServerFn({ method: 'POST' }).handler(async () => {
-  const user = await requireUser()
-  if (user.plan === 'pro') throw new Error('You are already on Pro.')
+/** Cashfree requires a customer phone number on every payment link. */
+const phoneSchema = z
+  .string()
+  .transform((v) => v.replace(/[\s()-]/g, '').replace(/^\+/, ''))
+  .pipe(z.string().regex(/^[0-9]{8,15}$/, 'Enter a valid mobile number.'))
 
-  let customerId = user.stripe_customer_id
-  if (!customerId) {
-    const customer = await stripe<{ id: string }>('POST', 'customers', {
-      email: user.email,
-      name: user.name || undefined,
-      metadata: { user_id: user.id },
-    })
-    customerId = customer.id
-    await db().prepare('UPDATE users SET stripe_customer_id = ? WHERE id = ?').bind(customerId, user.id).run()
-  }
-
-  const lineItem = env.STRIPE_PRICE_ID
-    ? { price: env.STRIPE_PRICE_ID, quantity: 1 }
-    : {
-        quantity: 1,
-        price_data: {
-          currency: 'usd',
-          unit_amount: Number(env.PRO_PRICE_CENTS || 900),
-          recurring: { interval: 'month' },
-          product_data: { name: `${env.APP_NAME} Pro` },
-        },
-      }
-
-  const session = await stripe<{ url: string }>('POST', 'checkout/sessions', {
-    mode: 'subscription',
-    customer: customerId,
-    client_reference_id: user.id,
-    line_items: [lineItem],
-    allow_promotion_codes: true,
-    success_url: `${origin()}/app/billing?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin()}/app/billing?canceled=1`,
-    subscription_data: { metadata: { user_id: user.id } },
-    metadata: { user_id: user.id },
-  })
-  return { url: session.url }
-})
-
-/**
- * Called when the user returns from Checkout. Confirms the session directly with
- * Stripe so upgrades work even before webhooks are configured (e.g. local dev).
- */
-export const syncCheckoutSession = createServerFn({ method: 'POST' })
-  .validator(z.object({ sessionId: z.string().startsWith('cs_').max(300) }))
+export const startProPayment = createServerFn({ method: 'POST' })
+  .validator(z.object({ phone: phoneSchema }))
   .handler(async ({ data }) => {
     const user = await requireUser()
-    const session = await stripe('GET', `checkout/sessions/${encodeURIComponent(data.sessionId)}`, { 'expand[]': 'subscription' } as any)
-    if (session.client_reference_id !== user.id) throw new Error('This checkout session belongs to a different account.')
-    if (session.subscription && typeof session.subscription === 'object') await applySubscription(session.subscription, user.id)
-    const fresh = await requireUser()
-    return toPublicUser(fresh)
+    if (user.plan === 'pro') throw new Error('You are already on Pro.')
+
+    const linkId = `cvaf_${newId().replace(/-/g, '')}`
+    await db()
+      .prepare('INSERT INTO payments (id, user_id, amount_paise, currency, status, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+      .bind(linkId, user.id, proPricePaise(), 'INR', 'created', Math.floor(Date.now() / 1000))
+      .run()
+    await db().prepare('UPDATE users SET phone = ? WHERE id = ?').bind(data.phone, user.id).run()
+
+    const link = await createProPaymentLink({
+      linkId,
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      phone: data.phone,
+      returnUrl: `${origin()}/app/billing?link_id=${linkId}`,
+      notifyUrl: `${origin()}/api/cashfree/webhook`,
+    })
+    if (link.cf_link_id) await db().prepare('UPDATE payments SET cf_link_id = ? WHERE id = ?').bind(link.cf_link_id, linkId).run()
+    return { url: link.link_url }
   })
 
-export const createPortalSession = createServerFn({ method: 'POST' }).handler(async () => {
-  const user = await requireUser()
-  if (!user.stripe_customer_id) throw new Error('No billing account yet.')
-  const portal = await stripe<{ url: string }>('POST', 'billing_portal/sessions', {
-    customer: user.stripe_customer_id,
-    return_url: `${origin()}/app/billing`,
+/**
+ * Called when the user returns from Cashfree. Confirms the link with Cashfree
+ * directly so the upgrade lands even if the webhook is slow or unconfigured.
+ */
+export const confirmProPayment = createServerFn({ method: 'POST' })
+  .validator(z.object({ linkId: z.string().max(64) }))
+  .handler(async ({ data }) => {
+    const user = await requireUser()
+    const owner = await db().prepare('SELECT user_id FROM payments WHERE id = ?').bind(data.linkId).first<{ user_id: string }>()
+    if (!owner || owner.user_id !== user.id) throw new Error('This payment belongs to a different account.')
+    const paid = await reconcilePayment(data.linkId)
+    return { paid, user: toPublicUser(await requireUser()) }
   })
-  return { url: portal.url }
-})
