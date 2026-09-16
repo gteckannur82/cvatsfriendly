@@ -1,0 +1,17 @@
+# Copy to .dev.vars for local development (never commit .dev.vars)
+
+# --- Stripe (test mode) ---
+STRIPE_SECRET_KEY=sk_test_xxx
+# From `stripe listen --forward-to localhost:3000/api/stripe/webhook` (optional locally)
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+# Optional: an existing recurring Price ID. If empty, a $9/month price is created inline at checkout.
+STRIPE_PRICE_ID=
+
+# --- AI ---
+# Optional: when set, Claude is used for AI features; otherwise Workers AI (free tier) is used.
+ANTHROPIC_API_KEY=
+# Optional model override (default claude-opus-5)
+ANTHROPIC_MODEL=
+
+# Optional: return canned AI responses for offline UI development
+AI_MOCK=false

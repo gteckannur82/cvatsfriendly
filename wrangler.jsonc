@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cvatsfriendly",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "observability": { "enabled": true },
+
+  // SQLite database (Cloudflare D1). Replace database_id after `wrangler d1 create cvatsfriendly-db`.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cvatsfriendly-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Workers AI — free-tier fallback when ANTHROPIC_API_KEY is not set.
+  "ai": { "binding": "AI", "remote": true },
+
+  "vars": {
+    "APP_NAME": "CV ATS Friendly",
+    "SITE_URL": "https://cvatsfriendly.com",
+    "PRO_PRICE_CENTS": "900",
+    "WORKERS_AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+  }
+
+  // Uncomment once cvatsfriendly.com is an active zone in your Cloudflare account:
+  // ,"routes": [
+  //   { "pattern": "cvatsfriendly.com", "custom_domain": true },
+  //   { "pattern": "www.cvatsfriendly.com", "custom_domain": true }
+  // ]
+}
